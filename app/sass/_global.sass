@@ -1,0 +1,101 @@
+html
+	box-sizing: border-box
+	overflow-x: hidden
+
+*, *:before, *:after
+	box-sizing: inherit
+
+*
+	-webkit-tap-highlight-color: transparent
+	&:focus, &:active
+		outline: none
+
+body
+	font-family: $default-font
+	font-weight: 400
+	font-size: 16px
+	line-height: 24px
+	color: $text
+	min-width: 320px
+	overflow-x: hidden
+
+a
+	display: block
+	text-decoration: none
+	color: $text
+
+ul, ol, li
+	margin: 0
+	padding: 0
+	list-style: none
+
+img
+	display: block
+	max-width: 100%
+	height: auto
+
+.container
+	max-width: 1920px
+	margin: 0 auto
+
+.slider 
+	appearance: none
+	width: 100% 
+	height: 4px
+	border: 1px solid #888
+	opacity: .7
+	transition: all .3s ease
+	cursor: pointer
+	border-radius: 8px
+	&:hover, &:active
+		opacity: 1
+	&::-webkit-slider-thumb
+		appearance: none
+		width: 10px
+		height: 19px
+		cursor: pointer
+		background: $accent
+		border-radius: 2px
+		z-index: 4
+
+.button
+	text-decoration: none
+	padding: 10px 15px
+	font-size: 19px
+	font-weight: 500
+	border-radius: 3px
+	text-align: center
+	position: relative
+	outline: none
+	border: none
+	transition: all .3s ease
+	cursor: pointer
+	width: 100%
+	&::after
+		transition: all .3s ease
+		position: absolute
+		content: ''
+		height: 4px
+		bottom: 0
+		width: 100%
+		background-color: darken($accent, 50%)
+		opacity: .18
+		border-bottom-left-radius: 2px
+		border-bottom-right-radius: 2px
+		left: 0
+	&:focus, &:hover
+		text-decoration: none
+		color: #fff
+		background-color: lighten($accent, 5%)
+		outline: none !important
+	&::-moz-focus-inner
+		border: 0
+	&:hover
+		background-color: lighten($accent, 5%)
+		&::after
+			opacity: .22
+	&:active
+		&::after
+			opacity: .32
+	& + .button
+		margin-left: 15px
