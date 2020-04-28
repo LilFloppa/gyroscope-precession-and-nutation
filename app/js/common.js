@@ -25,6 +25,8 @@ $(function() {
 		$("#initial-speed").val(0);
 		$("#initial-angle").val(90);
 
+		setText();
+
 		$(".pause-main").addClass("disabled");
 		$(".start-main").removeClass("disabled");
 		$(".slider").removeClass("disabled");
@@ -32,11 +34,13 @@ $(function() {
 
 
 	/* Sliders */
-	$("#distance, #mass, #radius, #rotation-speed, #initial-speed, #initial-angle").on("input", function() {
-		let el = $(this);
-		el.closest(".parameters__wrapper").children(".parameters__text").children("span").html(el.val());
-		console.log(el.val());
-	}).trigger("input");
+	function setText() {
+		$("#distance, #mass, #radius, #rotation-speed, #initial-speed, #initial-angle").on("input", function() {
+			let el = $(this);
+			el.closest(".parameters__wrapper").children(".parameters__text").children("span").html(el.val());
+		}).trigger("input");
+	}
+	setText();
 
 
 	/* Timer */
