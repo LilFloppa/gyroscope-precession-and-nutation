@@ -1,5 +1,5 @@
 {
-  "name": "Gyroscope",
+  "name": "gyroscope",
   "version": "1.0.0",
   "description": "Precession and nutation of a gyroscope",
   "main": "index.js",
@@ -10,6 +10,10 @@
   "author": "Igor Muramshhikov and Nikita Skrynnik",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@types/node": "^13.13.4",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.1.0",
     "browser-sync": "^2.26.7",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
@@ -21,16 +25,11 @@
     "gulp-sass": "^4.0.2",
     "gulp-terser": "^1.2.0",
     "gulp-util": "^3.0.8",
-    "@babel/core": "^7.9.0",
-    "awesome-typescript-loader": "^5.2.1",
-    "babel-loader": "^8.1.0",
     "typescript": "^3.8.3",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "@types/gl-matrix": "^2.4.5",
-    "@types/node": "^13.13.4",
     "gl-matrix": "^3.3.0",
     "obj-file-parser-ts": "^0.6.4"
   }

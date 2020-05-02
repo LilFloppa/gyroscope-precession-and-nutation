@@ -9,7 +9,7 @@ export class Camera {
   private phi: number;
   private psi: number;
 
-  private sensitivity: number = 0.005;
+  private sensitivity: number = 0.01;
 
   constructor(center: glm.vec3 = [0.0, 0.0, 0.0], radius: number = 5, phi: number = 0, psi: number = 0) {
     this.center = center;
@@ -18,10 +18,6 @@ export class Camera {
     this.psi = psi;
 
     this.position = [radius * Math.cos(phi) * Math.cos(psi), radius * Math.sin(psi), radius * Math.sin(phi) * Math.cos(psi)];
-  }
-
-  SetSensitivity(sensitivity: number): void {
-    this.sensitivity = sensitivity;
   }
 
   ProcessMouseMovement(xoffset: number, yoffset: number): void {
@@ -40,6 +36,10 @@ export class Camera {
       this.radius += 50 * this.sensitivity;
     }
 
+    // if (this.radius > 13.0) this.radius = 13.0;
+
+    if (this.radius < 5.0) this.radius = 5.0;
+
     this.UpdatePosition();
   }
 
@@ -50,6 +50,8 @@ export class Camera {
       this.radius * Math.sin(this.phi) * Math.cos(this.psi),
     ];
   }
+
+  Update(): void {}
 
   GetLookAt(): glm.mat4 {
     let lookat: glm.mat4 = glm.mat4.create();
