@@ -76,10 +76,10 @@ function startup(): void {
   shader = new Shader(shadersources.gyroVertSource, shadersources.gyroFragSource);
   camera = new Camera();
 
-  let floor: model.Floor = new model.Floor();
+  let floor: model.Model = new model.Model();
   model.LoadModel(objmodels.floor, floor);
   let gyroscope: gyro.Gyroscope = gyro.LoadGyroscope();
-  let table: model.Table = new model.Table();
+  let table: model.Model = new model.Model();
   model.LoadModel(objmodels.table, table);
 
   Models = [];
@@ -116,6 +116,7 @@ function draw(): void {
   shader.use();
   shader.setMat4("model", model as Float32Array);
   shader.setMat4("view", view as Float32Array);
+  shader.setMat4("proj", proj as Float32Array);
 
   for (let model of Models) {
     model.array.use();

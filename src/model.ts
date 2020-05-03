@@ -12,15 +12,7 @@ export interface IModel {
   Update(): void;
 }
 
-export class Table implements IModel {
-  array: VertexArray;
-  shader: Shader;
-  texture: Texture;
-
-  Update(): void {}
-}
-
-export class Floor implements IModel {
+export class Model implements IModel {
   array: VertexArray;
   shader: Shader;
   texture: Texture;

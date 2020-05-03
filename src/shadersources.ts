@@ -22,7 +22,7 @@ export const gyroFragSource: string = `#version 300 es
     out vec4 color;
 
     void main() {
-            vec3 dir = vec3(0.0, -1.0, 0.0);
+            vec3 dir = vec3(0.0, -1.0, 1.0);
             float res = max(-dot(vert_normal, dir), 0.0);
             color = vec4(res, res, res, 1.0);
     }`;

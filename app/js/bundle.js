@@ -152,10 +152,10 @@ function startup() {
     exports.gl.viewport(0, 0, width, height);
     shader = new shader_1.Shader(shadersources.gyroVertSource, shadersources.gyroFragSource);
     camera = new camera_1.Camera();
-    var floor = new model.Floor();
+    var floor = new model.Model();
     model.LoadModel(objmodels.floor, floor);
     var gyroscope = gyro.LoadGyroscope();
-    var table = new model.Table();
+    var table = new model.Model();
     model.LoadModel(objmodels.table, table);
     Models = [];
     Models.push(gyroscope.axis);
@@ -163,11 +163,6 @@ function startup() {
     Models.push(gyroscope.stand);
     Models.push(table);
     Models.push(floor);
-    var proj = glm.mat4.create();
-    proj = glm.mat4.identity(proj);
-    glm.mat4.perspective(proj, glm.glMatrix.toRadian(45.0), width / height, 0.1, 1000);
-    shader.use();
-    shader.setMat4("proj", proj);
 }
 function draw() {
     exports.gl.clearColor(1.0, 0.7, 0.4, 1.0);
@@ -181,9 +176,13 @@ function draw() {
     camera.ProcessMouseWheel(wheelOffset);
     wheelOffset = 0;
     var view = camera.GetLookAt();
+    var proj = glm.mat4.create();
+    proj = glm.mat4.identity(proj);
+    glm.mat4.perspective(proj, glm.glMatrix.toRadian(45.0), width / height, 0.1, 1000);
     shader.use();
     shader.setMat4("model", model);
     shader.setMat4("view", view);
+    shader.setMat4("proj", proj);
     for (var _i = 0, Models_1 = Models; _i < Models_1.length; _i++) {
         var model_1 = Models_1[_i];
         model_1.array.use();
@@ -218,20 +217,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var vertexArray_1 = __webpack_require__(6);
 var obj = __importStar(__webpack_require__(7));
-var Table = /** @class */ (function () {
-    function Table() {
+var Model = /** @class */ (function () {
+    function Model() {
     }
-    Table.prototype.Update = function () { };
-    return Table;
+    Model.prototype.Update = function () { };
+    return Model;
 }());
-exports.Table = Table;
-var Floor = /** @class */ (function () {
-    function Floor() {
-    }
-    Floor.prototype.Update = function () { };
-    return Floor;
-}());
-exports.Floor = Floor;
+exports.Model = Model;
 var Vertex = /** @class */ (function () {
     function Vertex(coords, UV, normal) {
         this.coords = coords;
@@ -8309,7 +8301,7 @@ exports.LoadGyroscope = LoadGyroscope;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.gyroVertSource = "#version 300 es\n    layout(location = 0) in vec3 position;\n    layout(location = 1) in vec3 normal;\n\n    uniform mat4 model;\n    uniform mat4 view;\n    uniform mat4 proj;\n\n    out vec3 vert_normal;\n\n    void main() {\n      gl_Position = proj * view * model * vec4(position, 1.0);\n      vert_normal = normal;\n    }";
-exports.gyroFragSource = "#version 300 es\n    #ifdef GL_ES\n        precision highp float;\n    #endif\n\n    in vec3 vert_normal;\n    out vec4 color;\n\n    void main() {\n            vec3 dir = vec3(0.0, -1.0, 0.0);\n            float res = max(-dot(vert_normal, dir), 0.0);\n            color = vec4(res, res, res, 1.0);\n    }";
+exports.gyroFragSource = "#version 300 es\n    #ifdef GL_ES\n        precision highp float;\n    #endif\n\n    in vec3 vert_normal;\n    out vec4 color;\n\n    void main() {\n            vec3 dir = vec3(0.0, -1.0, 1.0);\n            float res = max(-dot(vert_normal, dir), 0.0);\n            color = vec4(res, res, res, 1.0);\n    }";
 
 
 /***/ })
