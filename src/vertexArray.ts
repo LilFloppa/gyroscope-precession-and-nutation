@@ -5,7 +5,11 @@ export class VertexArray {
   readonly VBO: WebGLBuffer | null = null;
   readonly EBO: WebGLBuffer | null = null;
 
-  constructor(vertices: Float32Array, indices: Int32Array) {
+  readonly size: number;
+
+  constructor(vertices: Float32Array) {
+    this.size = vertices.length / 6;
+
     this.VAO = gl.createVertexArray();
     gl.bindVertexArray(this.VAO);
 
@@ -13,14 +17,11 @@ export class VertexArray {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-    if (indices !== null) {
-      this.EBO = gl.createBuffer();
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.EBO);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-    }
-
     gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 6 * 4, 0);
+
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
 
     gl.bindVertexArray(null);
   }

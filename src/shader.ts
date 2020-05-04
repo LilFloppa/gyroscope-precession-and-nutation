@@ -1,5 +1,4 @@
 import { gl } from "./index";
-import * as glm from "gl-matrix";
 
 export class Shader {
   private program: WebGLProgram | null = null;
