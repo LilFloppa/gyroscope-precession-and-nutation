@@ -117,6 +117,14 @@ var currentX = 0;
 var currentY = 0;
 var wheelOffset = 0;
 var firstMove = true;
+var mouseDown = false;
+function glCanvasOnMouseDown(e) {
+    console.log("onMousedown");
+    mouseDown = true;
+}
+function glCanvasOnMouseUp(e) {
+    mouseDown = false;
+}
 function glCanvasOnMouseMove(e) {
     var rect = glCanvas.getBoundingClientRect();
     currentX = e.clientX - rect.left;
@@ -143,6 +151,8 @@ function startup() {
     glCanvas.addEventListener("mousemove", glCanvasOnMouseMove);
     glCanvas.addEventListener("wheel", glCanvasOnWheel);
     glCanvas.addEventListener("resize", glCanvasOnResize);
+    glCanvas.addEventListener("mousedown", glCanvasOnMouseDown);
+    glCanvas.addEventListener("mouseup", glCanvasOnMouseUp);
     exports.gl = glCanvas.getContext("webgl2");
     width = glCanvas.clientWidth;
     height = glCanvas.clientHeight;
@@ -170,7 +180,8 @@ function draw() {
     exports.gl.clear(exports.gl.COLOR_BUFFER_BIT | exports.gl.DEPTH_BUFFER_BIT);
     var model = glm.mat4.create();
     model = glm.mat4.identity(model);
-    camera.ProcessMouseMovement(currentX - lastX, currentY - lastY);
+    if (mouseDown)
+        camera.ProcessMouseMovement(currentX - lastX, currentY - lastY);
     lastX = currentX;
     lastY = currentY;
     camera.ProcessMouseWheel(wheelOffset);
@@ -183,6 +194,7 @@ function draw() {
     shader.setMat4("model", model);
     shader.setMat4("view", view);
     shader.setMat4("proj", proj);
+    shader.setVec3("viewPos", camera.position);
     for (var _i = 0, Models_1 = Models; _i < Models_1.length; _i++) {
         var model_1 = Models_1[_i];
         model_1.array.use();
@@ -7926,6 +7938,10 @@ var Shader = /** @class */ (function () {
         var loc = index_1.gl.getUniformLocation(this.program, uniform);
         index_1.gl.uniformMatrix4fv(loc, false, mat);
     };
+    Shader.prototype.setVec3 = function (uniform, vec) {
+        var loc = index_1.gl.getUniformLocation(this.program, uniform);
+        index_1.gl.uniform3fv(loc, vec);
+    };
     Shader.prototype.setVec4 = function (uniform, vec) {
         var loc = index_1.gl.getUniformLocation(this.program, uniform);
         index_1.gl.uniform4fv(loc, vec);
@@ -8300,8 +8316,8 @@ exports.LoadGyroscope = LoadGyroscope;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gyroVertSource = "#version 300 es\n    layout(location = 0) in vec3 position;\n    layout(location = 1) in vec3 normal;\n\n    uniform mat4 model;\n    uniform mat4 view;\n    uniform mat4 proj;\n\n    out vec3 vert_normal;\n\n    void main() {\n      gl_Position = proj * view * model * vec4(position, 1.0);\n      vert_normal = normal;\n    }";
-exports.gyroFragSource = "#version 300 es\n    #ifdef GL_ES\n        precision highp float;\n    #endif\n\n    in vec3 vert_normal;\n    out vec4 color;\n\n    void main() {\n            vec3 dir = vec3(0.0, -1.0, 1.0);\n            float res = max(-dot(vert_normal, dir), 0.0);\n            color = vec4(res, res, res, 1.0);\n    }";
+exports.gyroVertSource = "#version 300 es\n    layout(location = 0) in vec3 pos;\n    layout(location = 1) in vec3 normal;\n\n    uniform mat4 model;\n    uniform mat4 view;\n    uniform mat4 proj;\n\n    out vec3 v_normal;\n    out vec3 v_pos;\n\n    void main() {\n      gl_Position = proj * view * model * vec4(pos, 1.0);\n      v_normal = normal;\n      v_pos = vec3(model * vec4(pos, 1.0));\n    }";
+exports.gyroFragSource = "#version 300 es\n    #ifdef GL_ES\n        precision highp float;\n    #endif\n\n    in vec3 v_normal;\n    in vec3 v_pos;\n    out vec4 color;\n\n    uniform vec3 viewPos;\n\n    void main() {\n            vec3 lightPos = vec3(0.0, 10.0, 0.0);\n            vec3 lightColor = vec3(1.0, 1.0, 1.0);\n            vec3 objectColor = vec3(1.0, 0.5, 0.2);\n\n            // Ambient\n            float ambientStrength = 0.1;\n            vec3 ambient = ambientStrength * lightColor;\n\n            // Diffuse\n            vec3 norm = normalize(v_normal);\n            vec3 lightDir = normalize(lightPos - v_pos);  \n\n            float diff = max(dot(norm, lightDir), 0.0);\n            vec3 diffuse = diff * lightColor;\n\n            // Specular\n            float specularStrength = 0.5;\n            vec3 viewDir = normalize(viewPos - v_pos);\n            vec3 reflectDir = reflect(-lightDir, norm);  \n\n            float max_spec = max(dot(viewDir, reflectDir), 0.0);\n\n            float spec = max_spec;\n            for (int i = 0; i < 32; i++)\n                spec *= max_spec;\n\n            vec3 specular = specularStrength * spec * lightColor;  \n\n            // Result\n            vec3 result = (ambient + diffuse + specular) * objectColor;\n            color = vec4(result, 1.0);\n    }";
 
 
 /***/ })

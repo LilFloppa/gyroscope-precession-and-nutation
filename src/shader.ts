@@ -41,6 +41,11 @@ export class Shader {
     gl.uniformMatrix4fv(loc, false, mat);
   }
 
+  setVec3(uniform: string, vec: Float32Array) {
+    let loc: WebGLUniformLocation = gl.getUniformLocation(this.program, uniform);
+    gl.uniform3fv(loc, vec);
+  }
+
   setVec4(uniform: string, vec: Float32Array) {
     let loc: WebGLUniformLocation = gl.getUniformLocation(this.program, uniform);
     gl.uniform4fv(loc, vec);

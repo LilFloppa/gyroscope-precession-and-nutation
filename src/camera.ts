@@ -2,7 +2,7 @@ import * as glm from "gl-matrix";
 import { gl } from ".";
 
 export class Camera {
-  private position: glm.vec3;
+  position: glm.vec3;
   private center: glm.vec3;
 
   private radius: number;

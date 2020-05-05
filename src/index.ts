@@ -27,6 +27,16 @@ let currentY: number = 0;
 let wheelOffset: number = 0;
 
 let firstMove: boolean = true;
+let mouseDown: boolean = false;
+
+function glCanvasOnMouseDown(e: MouseEvent) {
+  console.log("onMousedown");
+  mouseDown = true;
+}
+
+function glCanvasOnMouseUp(e: MouseEvent) {
+  mouseDown = false;
+}
 
 function glCanvasOnMouseMove(e: MouseEvent): void {
   var rect = glCanvas.getBoundingClientRect();
@@ -62,6 +72,8 @@ function startup(): void {
   glCanvas.addEventListener("mousemove", glCanvasOnMouseMove);
   glCanvas.addEventListener("wheel", glCanvasOnWheel);
   glCanvas.addEventListener("resize", glCanvasOnResize);
+  glCanvas.addEventListener("mousedown", glCanvasOnMouseDown);
+  glCanvas.addEventListener("mouseup", glCanvasOnMouseUp);
 
   gl = (glCanvas as HTMLCanvasElement).getContext("webgl2");
 
@@ -99,7 +111,7 @@ function draw(): void {
   let model: glm.mat4 = glm.mat4.create();
   model = glm.mat4.identity(model);
 
-  camera.ProcessMouseMovement(currentX - lastX, currentY - lastY);
+  if (mouseDown) camera.ProcessMouseMovement(currentX - lastX, currentY - lastY);
 
   lastX = currentX;
   lastY = currentY;
@@ -117,6 +129,7 @@ function draw(): void {
   shader.setMat4("model", model as Float32Array);
   shader.setMat4("view", view as Float32Array);
   shader.setMat4("proj", proj as Float32Array);
+  shader.setVec3("viewPos", camera.position as Float32Array);
 
   for (let model of Models) {
     model.array.use();
