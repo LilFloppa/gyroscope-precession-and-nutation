@@ -112,4 +112,8 @@ $(function() {
 		isStarted = true;
 	}
 
+
+	/* Windows with charts */
+	
+
 });
