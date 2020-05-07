@@ -32,7 +32,7 @@ class Vertex {
   }
 }
 
-export function LoadModel(data: string, model: IModel) {
+export function LoadModel(data: string, texFileName: string, model: IModel) {
   const objFile = new obj.default(data);
   console.log(objFile);
   const parsed = objFile.parse();
@@ -58,8 +58,9 @@ export function LoadModel(data: string, model: IModel) {
 
   let raw: number[] = [];
   for (let vertex of parsed_vertices) {
-    raw.push(...vertex.coords, ...vertex.normal);
+    raw.push(...vertex.coords, ...vertex.normal, ...vertex.UV);
   }
 
   model.array = new VertexArray(new Float32Array(raw));
+  model.texture = new Texture(texFileName);
 }

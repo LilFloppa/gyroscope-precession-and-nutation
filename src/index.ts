@@ -1,5 +1,6 @@
 import { Shader } from "./shader";
 import { Camera } from "./camera";
+
 import * as model from "./model";
 import * as gyro from "./gyroscope";
 
@@ -89,10 +90,10 @@ function startup(): void {
   camera = new Camera();
 
   let floor: model.Model = new model.Model();
-  model.LoadModel(objmodels.floor, floor);
+  model.LoadModel(objmodels.floor, "assets/1.png", floor);
   let gyroscope: gyro.Gyroscope = gyro.LoadGyroscope();
   let table: model.Model = new model.Model();
-  model.LoadModel(objmodels.table, table);
+  model.LoadModel(objmodels.table, "assets/2.png", table);
 
   Models = [];
 
@@ -133,6 +134,7 @@ function draw(): void {
 
   for (let model of Models) {
     model.array.use();
+    model.texture.Use();
     gl.drawArrays(gl.TRIANGLES, 0, model.array.size);
   }
 

@@ -50,9 +50,9 @@ export function LoadGyroscope(): Gyroscope {
   gyro.axis = new Axis();
   gyro.stand = new Stand();
 
-  model.LoadModel(objmodels.axis, gyro.axis);
-  model.LoadModel(objmodels.disk, gyro.disk);
-  model.LoadModel(objmodels.stand, gyro.stand);
+  model.LoadModel(objmodels.axis, "assets/1.png", gyro.axis);
+  model.LoadModel(objmodels.disk, "assets/2.png", gyro.disk);
+  model.LoadModel(objmodels.stand, "assets/2.png", gyro.stand);
 
   return gyro;
 }
