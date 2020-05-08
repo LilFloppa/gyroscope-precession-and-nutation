@@ -11,7 +11,7 @@ export class Camera {
 
   private sensitivity: number = 0.01;
 
-  constructor(center: glm.vec3 = [0.0, 0.0, 0.0], radius: number = 5, phi: number = 0, psi: number = 0) {
+  constructor(center: glm.vec3 = [0.0, 0.0, 0.0], radius: number = 5, phi: number = Math.PI, psi: number = 0) {
     this.center = center;
     this.radius = radius;
     this.phi = phi;

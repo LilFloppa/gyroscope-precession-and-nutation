@@ -1,5 +1,6 @@
 import { Shader } from "./shader";
 import { Camera } from "./camera";
+import { DirectionalLight } from "./directionalLight";
 
 import * as model from "./model";
 import * as gyro from "./gyroscope";
@@ -15,6 +16,7 @@ let shader: Shader;
 let camera: Camera;
 
 let Models: model.IModel[];
+let Lights: DirectionalLight[];
 
 let width: number;
 let height: number;
@@ -30,8 +32,9 @@ let wheelOffset: number = 0;
 let firstMove: boolean = true;
 let mouseDown: boolean = false;
 
+let gyroscope: gyro.Gyroscope;
+
 function glCanvasOnMouseDown(e: MouseEvent) {
-  console.log("onMousedown");
   mouseDown = true;
 }
 
@@ -63,8 +66,6 @@ function glCanvasOnResize(): void {
   gl.canvas.height = height;
 
   gl.viewport(0, 0, width, height);
-
-  console.log(width, height);
 }
 
 function startup(): void {
@@ -80,20 +81,21 @@ function startup(): void {
 
   width = glCanvas.clientWidth;
   height = glCanvas.clientHeight;
-  console.log(width, height);
 
   gl.canvas.width = width;
   gl.canvas.height = height;
   gl.viewport(0, 0, width, height);
 
-  shader = new Shader(shadersources.gyroVertSource, shadersources.gyroFragSource);
+  shader = new Shader(shadersources.vertBase, shadersources.FragBase);
   camera = new Camera();
 
   let floor: model.Model = new model.Model();
   model.LoadModel(objmodels.floor, "assets/floorMat.jpg", floor);
-  let gyroscope: gyro.Gyroscope = gyro.LoadGyroscope();
+  gyroscope = gyro.LoadGyroscope();
   let table: model.Model = new model.Model();
   model.LoadModel(objmodels.table, "assets/tableMat.jpg", table);
+
+  glm.mat4.translate(gyroscope.disk.modelMat, gyroscope.disk.modelMat, [0.0, 0.0, 2.5]);
 
   Models = [];
 
@@ -103,15 +105,34 @@ function startup(): void {
   Models.push(gyroscope.stand);
   Models.push(table);
   Models.push(floor);
+
+  Lights = [];
+  Lights.push(new DirectionalLight([0.0, -1.0, 0.0], [0.1, 0.1, 0.1], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
+  Lights.push(new DirectionalLight([0.0, 0.0, -1.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
+  Lights.push(new DirectionalLight([0.0, 0.0, 1.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
+  Lights.push(new DirectionalLight([1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
+  Lights.push(new DirectionalLight([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
+
+  shader.use();
+  let i: number = 0;
+  for (let light of Lights) {
+    shader.setVec3("lights[" + i + "].ambient", light.ambient as Float32Array);
+    shader.setVec3("lights[" + i + "].diffuse", light.diffuse as Float32Array);
+    shader.setVec3("lights[" + i + "].specular", light.specular as Float32Array);
+    shader.setVec3("lights[" + i + "].direction", light.direction as Float32Array);
+    i++;
+  }
+
+  let proj: glm.mat4 = glm.mat4.create();
+  proj = glm.mat4.identity(proj);
+  glm.mat4.perspective(proj, glm.glMatrix.toRadian(45.0), width / height, 0.1, 1000);
+  shader.setMat4("proj", proj as Float32Array);
 }
 
 function draw(): void {
-  gl.clearColor(1.0, 0.7, 0.4, 1.0);
+  gl.clearColor(0.82, 0.88, 0.94, 1.0);
   gl.enable(gl.DEPTH_TEST);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  let model: glm.mat4 = glm.mat4.create();
-  model = glm.mat4.identity(model);
 
   if (mouseDown) camera.ProcessMouseMovement(currentX - lastX, currentY - lastY);
 
@@ -123,19 +144,15 @@ function draw(): void {
 
   let view: glm.mat4 = camera.GetLookAt();
 
-  let proj: glm.mat4 = glm.mat4.create();
-  proj = glm.mat4.identity(proj);
-  glm.mat4.perspective(proj, glm.glMatrix.toRadian(45.0), width / height, 0.1, 1000);
-
   shader.use();
-  shader.setMat4("model", model as Float32Array);
   shader.setMat4("view", view as Float32Array);
-  shader.setMat4("proj", proj as Float32Array);
   shader.setVec3("viewPos", camera.position as Float32Array);
 
   for (let model of Models) {
     model.array.use();
     model.texture.Use();
+    shader.setMat4("model", model.modelMat as Float32Array);
+
     gl.drawArrays(gl.TRIANGLES, 0, model.array.size);
   }
 

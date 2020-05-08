@@ -3,6 +3,7 @@ import { Shader } from "./shader";
 import { Texture } from "./texture";
 import * as model from "./model";
 
+import * as glm from "gl-matrix";
 import * as objmodels from "./objmodels";
 
 export class Gyroscope {
@@ -26,6 +27,8 @@ class Stand implements model.IModel {
   shader: Shader;
   texture: Texture;
 
+  modelMat: glm.mat4;
+
   Update(): void {}
 }
 
@@ -33,6 +36,8 @@ class Box implements model.IModel {
   array: VertexArray;
   shader: Shader;
   texture: Texture;
+
+  modelMat: glm.mat4;
 
   Update(): void {}
 }
@@ -42,6 +47,8 @@ class Axis implements model.IModel {
   shader: Shader;
   texture: Texture;
 
+  modelMat: glm.mat4;
+
   Update(): void {}
 }
 
@@ -49,6 +56,8 @@ class Disk implements model.IModel {
   array: VertexArray;
   shader: Shader;
   texture: Texture;
+
+  modelMat: glm.mat4;
 
   Update(): void {}
 }
