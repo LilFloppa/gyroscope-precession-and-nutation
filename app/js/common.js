@@ -114,6 +114,25 @@ $(function() {
 
 
 	/* Windows with charts */
-	
+	let mousePosition,
+			offset = [0,0],
+			drag = document.getElementById("draggable"),
+			isDown = false;
+
+	drag.addEventListener('mousedown', function(e) {
+		isDown = true;
+		offset = [drag.offsetLeft - e.clientX, drag.offsetTop - e.clientY];
+	}, true);
+
+	document.addEventListener('mouseup', function() { isDown = false; }, true);
+
+	document.addEventListener('mousemove', function(event) {
+		event.preventDefault();
+		if (isDown) {
+			mousePosition = { x : event.clientX, y : event.clientY };
+			drag.style.left = (mousePosition.x + offset[0]) + 'px';
+			drag.style.top  = (mousePosition.y + offset[1]) + 'px';
+		}
+	}, true);
 
 });
