@@ -4,7 +4,7 @@ module.exports = {
   entry: "./src/index.ts",
   output: {
     filename: "bundle.js",
-    path: path.resolve("app/js"),
+    path: path.resolve("C:/xampp/htdocs/app/js"),
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],

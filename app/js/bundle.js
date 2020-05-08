@@ -101,10 +101,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var shader_1 = __webpack_require__(4);
 var camera_1 = __webpack_require__(5);
 var model = __importStar(__webpack_require__(1));
-var gyro = __importStar(__webpack_require__(8));
+var gyro = __importStar(__webpack_require__(9));
 var glm = __importStar(__webpack_require__(3));
 var objmodels = __importStar(__webpack_require__(2));
-var shadersources = __importStar(__webpack_require__(9));
+var shadersources = __importStar(__webpack_require__(10));
 var glCanvas;
 var shader;
 var camera;
@@ -163,13 +163,14 @@ function startup() {
     shader = new shader_1.Shader(shadersources.gyroVertSource, shadersources.gyroFragSource);
     camera = new camera_1.Camera();
     var floor = new model.Model();
-    model.LoadModel(objmodels.floor, floor);
+    model.LoadModel(objmodels.floor, "assets/1.png", floor);
     var gyroscope = gyro.LoadGyroscope();
     var table = new model.Model();
-    model.LoadModel(objmodels.table, table);
+    model.LoadModel(objmodels.table, "assets/2.png", table);
     Models = [];
     Models.push(gyroscope.axis);
     Models.push(gyroscope.disk);
+    Models.push(gyroscope.box);
     Models.push(gyroscope.stand);
     Models.push(table);
     Models.push(floor);
@@ -198,6 +199,7 @@ function draw() {
     for (var _i = 0, Models_1 = Models; _i < Models_1.length; _i++) {
         var model_1 = Models_1[_i];
         model_1.array.use();
+        model_1.texture.Use();
         exports.gl.drawArrays(exports.gl.TRIANGLES, 0, model_1.array.size);
     }
     window.requestAnimationFrame(draw);
@@ -228,7 +230,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var vertexArray_1 = __webpack_require__(6);
-var obj = __importStar(__webpack_require__(7));
+var texture_1 = __webpack_require__(7);
+var obj = __importStar(__webpack_require__(8));
 var Model = /** @class */ (function () {
     function Model() {
     }
@@ -244,7 +247,7 @@ var Vertex = /** @class */ (function () {
     }
     return Vertex;
 }());
-function LoadModel(data, model) {
+function LoadModel(data, texFileName, model) {
     var objFile = new obj.default(data);
     console.log(objFile);
     var parsed = objFile.parse();
@@ -268,9 +271,10 @@ function LoadModel(data, model) {
     var raw = [];
     for (var _d = 0, parsed_vertices_1 = parsed_vertices; _d < parsed_vertices_1.length; _d++) {
         var vertex = parsed_vertices_1[_d];
-        raw.push.apply(raw, __spreadArrays(vertex.coords, vertex.normal));
+        raw.push.apply(raw, __spreadArrays(vertex.coords, vertex.normal, vertex.UV));
     }
     model.array = new vertexArray_1.VertexArray(new Float32Array(raw));
+    model.texture = new texture_1.Texture(texFileName);
 }
 exports.LoadModel = LoadModel;
 
@@ -8041,9 +8045,11 @@ var VertexArray = /** @class */ (function () {
         index_1.gl.bindBuffer(index_1.gl.ARRAY_BUFFER, this.VBO);
         index_1.gl.bufferData(index_1.gl.ARRAY_BUFFER, vertices, index_1.gl.STATIC_DRAW);
         index_1.gl.enableVertexAttribArray(0);
-        index_1.gl.vertexAttribPointer(0, 3, index_1.gl.FLOAT, false, 6 * 4, 0);
+        index_1.gl.vertexAttribPointer(0, 3, index_1.gl.FLOAT, false, 8 * 4, 0);
         index_1.gl.enableVertexAttribArray(1);
-        index_1.gl.vertexAttribPointer(1, 3, index_1.gl.FLOAT, false, 6 * 4, 3 * 4);
+        index_1.gl.vertexAttribPointer(1, 3, index_1.gl.FLOAT, false, 8 * 4, 3 * 4);
+        index_1.gl.enableVertexAttribArray(2);
+        index_1.gl.vertexAttribPointer(2, 2, index_1.gl.FLOAT, false, 8 * 4, 6 * 4);
         index_1.gl.bindVertexArray(null);
     }
     VertexArray.prototype.use = function () {
@@ -8056,6 +8062,34 @@ exports.VertexArray = VertexArray;
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var index_1 = __webpack_require__(0);
+var Texture = /** @class */ (function () {
+    function Texture(filename) {
+        var _this = this;
+        this.texture = index_1.gl.createTexture();
+        this.image = new Image();
+        this.image.onload = function (e) {
+            index_1.gl.bindTexture(index_1.gl.TEXTURE_2D, _this.texture);
+            index_1.gl.texImage2D(index_1.gl.TEXTURE_2D, 0, index_1.gl.RGBA, index_1.gl.RGBA, index_1.gl.UNSIGNED_BYTE, _this.image);
+            index_1.gl.generateMipmap(index_1.gl.TEXTURE_2D);
+        };
+        this.image.src = filename;
+    }
+    Texture.prototype.Use = function () {
+        index_1.gl.bindTexture(index_1.gl.TEXTURE_2D, this.texture);
+    };
+    return Texture;
+}());
+exports.Texture = Texture;
+
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8251,7 +8285,7 @@ exports.default = OBJFile;
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8272,6 +8306,7 @@ var Gyroscope = /** @class */ (function () {
     // Свойства
     Gyroscope.prototype.Update = function () {
         this.stand.Update();
+        this.box.Update();
         this.axis.Update();
         this.disk.Update();
     };
@@ -8283,6 +8318,12 @@ var Stand = /** @class */ (function () {
     }
     Stand.prototype.Update = function () { };
     return Stand;
+}());
+var Box = /** @class */ (function () {
+    function Box() {
+    }
+    Box.prototype.Update = function () { };
+    return Box;
 }());
 var Axis = /** @class */ (function () {
     function Axis() {
@@ -8300,24 +8341,26 @@ function LoadGyroscope() {
     var gyro = new Gyroscope();
     gyro.disk = new Disk();
     gyro.axis = new Axis();
+    gyro.box = new Box();
     gyro.stand = new Stand();
-    model.LoadModel(objmodels.axis, gyro.axis);
-    model.LoadModel(objmodels.disk, gyro.disk);
-    model.LoadModel(objmodels.stand, gyro.stand);
+    model.LoadModel(objmodels.axis, "assets/1.png", gyro.axis);
+    model.LoadModel(objmodels.box, "assets/1.png", gyro.box);
+    model.LoadModel(objmodels.disk, "assets/2.png", gyro.disk);
+    model.LoadModel(objmodels.stand, "assets/2.png", gyro.stand);
     return gyro;
 }
 exports.LoadGyroscope = LoadGyroscope;
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gyroVertSource = "#version 300 es\n    layout(location = 0) in vec3 pos;\n    layout(location = 1) in vec3 normal;\n\n    uniform mat4 model;\n    uniform mat4 view;\n    uniform mat4 proj;\n\n    out vec3 v_normal;\n    out vec3 v_pos;\n\n    void main() {\n      gl_Position = proj * view * model * vec4(pos, 1.0);\n      v_normal = normal;\n      v_pos = vec3(model * vec4(pos, 1.0));\n    }";
-exports.gyroFragSource = "#version 300 es\n    #ifdef GL_ES\n        precision highp float;\n    #endif\n\n    in vec3 v_normal;\n    in vec3 v_pos;\n    out vec4 color;\n\n    uniform vec3 viewPos;\n\n    void main() {\n            vec3 lightPos = vec3(0.0, 10.0, 0.0);\n            vec3 lightColor = vec3(1.0, 1.0, 1.0);\n            vec3 objectColor = vec3(1.0, 0.5, 0.2);\n\n            // Ambient\n            float ambientStrength = 0.1;\n            vec3 ambient = ambientStrength * lightColor;\n\n            // Diffuse\n            vec3 norm = normalize(v_normal);\n            vec3 lightDir = normalize(lightPos - v_pos);  \n\n            float diff = max(dot(norm, lightDir), 0.0);\n            vec3 diffuse = diff * lightColor;\n\n            // Specular\n            float specularStrength = 0.5;\n            vec3 viewDir = normalize(viewPos - v_pos);\n            vec3 reflectDir = reflect(-lightDir, norm);  \n\n            float max_spec = max(dot(viewDir, reflectDir), 0.0);\n\n            float spec = max_spec;\n            for (int i = 0; i < 32; i++)\n                spec *= max_spec;\n\n            vec3 specular = specularStrength * spec * lightColor;  \n\n            // Result\n            vec3 result = (ambient + diffuse + specular) * objectColor;\n            color = vec4(result, 1.0);\n    }";
+exports.gyroVertSource = "#version 300 es\n    layout(location = 0) in vec3 pos;\n    layout(location = 1) in vec3 normal;\n    layout(location = 2) in vec2 uv;\n\n    uniform mat4 model;\n    uniform mat4 view;\n    uniform mat4 proj;\n\n    out vec3 v_pos;\n    out vec3 v_normal;\n    out vec2 v_uv;\n    \n    void main() {\n      gl_Position = proj * view * model * vec4(pos, 1.0);\n      v_pos = vec3(model * vec4(pos, 1.0));\n      v_normal = normal;\n      v_uv = uv;\n    }";
+exports.gyroFragSource = "#version 300 es\n    #ifdef GL_ES\n        precision highp float;\n    #endif\n\n    in vec3 v_pos;\n    in vec3 v_normal;\n    in vec2 v_uv;\n\n    out vec4 color;\n\n    uniform vec3 viewPos;\n    uniform sampler2D diffuse_tex;\n\n    void main() {\n            vec3 lightPos = vec3(0.0, 10.0, 10.0);\n            vec3 lightColor = vec3(1.0, 1.0, 1.0);\n\n            // Ambient\n            float ambientStrength = 0.1;\n            vec3 ambient = ambientStrength * lightColor;\n\n            // Diffuse\n            vec3 norm = normalize(v_normal);\n            vec3 lightDir = normalize(lightPos - v_pos);  \n\n            float diff = max(dot(norm, lightDir), 0.0);\n            vec3 diffuse = diff * vec3(texture(diffuse_tex, v_uv));\n\n            // Specular\n            float specularStrength = 0.5;\n            vec3 viewDir = normalize(viewPos - v_pos);\n            vec3 reflectDir = reflect(-lightDir, norm);  \n\n            float max_spec = max(dot(viewDir, reflectDir), 0.0);\n\n            float spec = max_spec;\n            for (int i = 0; i < 32; i++)\n                spec *= max_spec;\n\n            vec3 specular = specularStrength * spec * lightColor;  \n\n            // Result\n            vec3 result = ambient + diffuse + specular;\n            color = vec4(result, 1.0);\n    }";
 
 
 /***/ })

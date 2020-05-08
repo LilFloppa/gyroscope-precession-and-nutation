@@ -15,7 +15,7 @@ export const gyroVertSource: string = `#version 300 es
       gl_Position = proj * view * model * vec4(pos, 1.0);
       v_pos = vec3(model * vec4(pos, 1.0));
       v_normal = normal;
-      v_uv = uv;
+      v_uv = vec2(uv.x, -uv.y);
     }`;
 
 export const gyroFragSource: string = `#version 300 es
@@ -33,7 +33,7 @@ export const gyroFragSource: string = `#version 300 es
     uniform sampler2D diffuse_tex;
 
     void main() {
-            vec3 lightPos = vec3(0.0, 10.0, 10.0);
+            vec3 lightPos = vec3(-10.0, 10.0, 10.0);
             vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
             // Ambient

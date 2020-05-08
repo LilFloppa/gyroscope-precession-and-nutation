@@ -38,7 +38,7 @@ export class Camera {
 
     // if (this.radius > 13.0) this.radius = 13.0;
 
-    if (this.radius < 5.0) this.radius = 5.0;
+    //  if (this.radius < 5.0) this.radius = 5.0;
 
     this.UpdatePosition();
   }

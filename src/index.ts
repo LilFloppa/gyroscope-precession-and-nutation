@@ -90,15 +90,16 @@ function startup(): void {
   camera = new Camera();
 
   let floor: model.Model = new model.Model();
-  model.LoadModel(objmodels.floor, "assets/1.png", floor);
+  model.LoadModel(objmodels.floor, "assets/floorMat.jpg", floor);
   let gyroscope: gyro.Gyroscope = gyro.LoadGyroscope();
   let table: model.Model = new model.Model();
-  model.LoadModel(objmodels.table, "assets/2.png", table);
+  model.LoadModel(objmodels.table, "assets/tableMat.jpg", table);
 
   Models = [];
 
   Models.push(gyroscope.axis);
   Models.push(gyroscope.disk);
+  Models.push(gyroscope.box);
   Models.push(gyroscope.stand);
   Models.push(table);
   Models.push(floor);
