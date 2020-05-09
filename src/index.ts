@@ -3,14 +3,14 @@ import { Camera } from "./camera";
 import { DirectionalLight } from "./directionalLight";
 
 import * as model from "./model";
-import * as gyro from "./gyroscope";
+import { Gyroscope } from "./gyroscope";
 
 import * as glm from "gl-matrix";
 import * as objmodels from "./objmodels";
 import * as shadersources from "./shadersources";
 
-export let gl: WebGL2RenderingContext | null;
-let glCanvas: HTMLElement | null;
+export let gl: WebGL2RenderingContext;
+let glCanvas: HTMLElement;
 
 let shader: Shader;
 let camera: Camera;
@@ -31,8 +31,6 @@ let wheelOffset: number = 0;
 
 let firstMove: boolean = true;
 let mouseDown: boolean = false;
-
-let gyroscope: gyro.Gyroscope;
 
 function glCanvasOnMouseDown(e: MouseEvent) {
   mouseDown = true;
@@ -68,7 +66,10 @@ function glCanvasOnResize(): void {
   gl.viewport(0, 0, width, height);
 }
 
+let gyroscope: Gyroscope;
+
 function startup(): void {
+  // Init canvas
   glCanvas = document.getElementById("canvas");
 
   glCanvas.addEventListener("mousemove", glCanvasOnMouseMove);
@@ -86,16 +87,18 @@ function startup(): void {
   gl.canvas.height = height;
   gl.viewport(0, 0, width, height);
 
+  // Init shader
   shader = new Shader(shadersources.vertBase, shadersources.FragBase);
+
+  // Init camera
   camera = new Camera();
 
+  // Load models
   let floor: model.Model = new model.Model();
   model.LoadModel(objmodels.floor, "assets/floorMat.jpg", floor);
-  gyroscope = gyro.LoadGyroscope();
+  gyroscope = new Gyroscope();
   let table: model.Model = new model.Model();
   model.LoadModel(objmodels.table, "assets/tableMat.jpg", table);
-
-  glm.mat4.translate(gyroscope.disk.modelMat, gyroscope.disk.modelMat, [0.0, 0.0, 2.5]);
 
   Models = [];
 
@@ -106,6 +109,7 @@ function startup(): void {
   Models.push(table);
   Models.push(floor);
 
+  // Load lights
   Lights = [];
   Lights.push(new DirectionalLight([0.0, -1.0, 0.0], [0.1, 0.1, 0.1], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
   Lights.push(new DirectionalLight([0.0, 0.0, -1.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
@@ -113,6 +117,7 @@ function startup(): void {
   Lights.push(new DirectionalLight([1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
   Lights.push(new DirectionalLight([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
 
+  // Set light
   shader.use();
   let i: number = 0;
   for (let light of Lights) {
@@ -123,13 +128,27 @@ function startup(): void {
     i++;
   }
 
+  // Set projection matrix
   let proj: glm.mat4 = glm.mat4.create();
   proj = glm.mat4.identity(proj);
   glm.mat4.perspective(proj, glm.glMatrix.toRadian(45.0), width / height, 0.1, 1000);
   shader.setMat4("proj", proj as Float32Array);
 }
 
+let currentTime: number = 0;
+let lastTime: number = 0;
+let firstTime: boolean = true;
+
 function draw(): void {
+  if (firstTime) {
+    currentTime = new Date().getTime();
+    lastTime = currentTime;
+    firstTime = false;
+  }
+
+  currentTime = new Date().getTime();
+  let dt: number = (currentTime - lastTime) / 1000;
+
   gl.clearColor(0.82, 0.88, 0.94, 1.0);
   gl.enable(gl.DEPTH_TEST);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -144,6 +163,8 @@ function draw(): void {
 
   let view: glm.mat4 = camera.GetLookAt();
 
+  for (let i: number = 0; i * 0.0001 < dt / 3; i++) gyroscope.Update(0.0001);
+
   shader.use();
   shader.setMat4("view", view as Float32Array);
   shader.setVec3("viewPos", camera.position as Float32Array);
@@ -156,6 +177,7 @@ function draw(): void {
     gl.drawArrays(gl.TRIANGLES, 0, model.array.size);
   }
 
+  lastTime = currentTime;
   window.requestAnimationFrame(draw);
 }
 

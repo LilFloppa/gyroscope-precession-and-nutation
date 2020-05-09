@@ -102,7 +102,7 @@ var shader_1 = __webpack_require__(4);
 var camera_1 = __webpack_require__(5);
 var directionalLight_1 = __webpack_require__(6);
 var model = __importStar(__webpack_require__(2));
-var gyro = __importStar(__webpack_require__(10));
+var gyroscope_1 = __webpack_require__(10);
 var glm = __importStar(__webpack_require__(1));
 var objmodels = __importStar(__webpack_require__(3));
 var shadersources = __importStar(__webpack_require__(11));
@@ -120,7 +120,6 @@ var currentY = 0;
 var wheelOffset = 0;
 var firstMove = true;
 var mouseDown = false;
-var gyroscope;
 function glCanvasOnMouseDown(e) {
     mouseDown = true;
 }
@@ -147,7 +146,9 @@ function glCanvasOnResize() {
     exports.gl.canvas.height = height;
     exports.gl.viewport(0, 0, width, height);
 }
+var gyroscope;
 function startup() {
+    // Init canvas
     glCanvas = document.getElementById("canvas");
     glCanvas.addEventListener("mousemove", glCanvasOnMouseMove);
     glCanvas.addEventListener("wheel", glCanvasOnWheel);
@@ -160,14 +161,16 @@ function startup() {
     exports.gl.canvas.width = width;
     exports.gl.canvas.height = height;
     exports.gl.viewport(0, 0, width, height);
+    // Init shader
     shader = new shader_1.Shader(shadersources.vertBase, shadersources.FragBase);
+    // Init camera
     camera = new camera_1.Camera();
+    // Load models
     var floor = new model.Model();
     model.LoadModel(objmodels.floor, "assets/floorMat.jpg", floor);
-    gyroscope = gyro.LoadGyroscope();
+    gyroscope = new gyroscope_1.Gyroscope();
     var table = new model.Model();
     model.LoadModel(objmodels.table, "assets/tableMat.jpg", table);
-    glm.mat4.translate(gyroscope.disk.modelMat, gyroscope.disk.modelMat, [0.0, 0.0, 2.5]);
     Models = [];
     Models.push(gyroscope.axis);
     Models.push(gyroscope.disk);
@@ -175,12 +178,14 @@ function startup() {
     Models.push(gyroscope.stand);
     Models.push(table);
     Models.push(floor);
+    // Load lights
     Lights = [];
     Lights.push(new directionalLight_1.DirectionalLight([0.0, -1.0, 0.0], [0.1, 0.1, 0.1], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
     Lights.push(new directionalLight_1.DirectionalLight([0.0, 0.0, -1.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
     Lights.push(new directionalLight_1.DirectionalLight([0.0, 0.0, 1.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
     Lights.push(new directionalLight_1.DirectionalLight([1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
     Lights.push(new directionalLight_1.DirectionalLight([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
+    // Set light
     shader.use();
     var i = 0;
     for (var _i = 0, Lights_1 = Lights; _i < Lights_1.length; _i++) {
@@ -191,12 +196,23 @@ function startup() {
         shader.setVec3("lights[" + i + "].direction", light.direction);
         i++;
     }
+    // Set projection matrix
     var proj = glm.mat4.create();
     proj = glm.mat4.identity(proj);
     glm.mat4.perspective(proj, glm.glMatrix.toRadian(45.0), width / height, 0.1, 1000);
     shader.setMat4("proj", proj);
 }
+var currentTime = 0;
+var lastTime = 0;
+var firstTime = true;
 function draw() {
+    if (firstTime) {
+        currentTime = new Date().getTime();
+        lastTime = currentTime;
+        firstTime = false;
+    }
+    currentTime = new Date().getTime();
+    var dt = (currentTime - lastTime) / 1000;
     exports.gl.clearColor(0.82, 0.88, 0.94, 1.0);
     exports.gl.enable(exports.gl.DEPTH_TEST);
     exports.gl.clear(exports.gl.COLOR_BUFFER_BIT | exports.gl.DEPTH_BUFFER_BIT);
@@ -207,6 +223,8 @@ function draw() {
     camera.ProcessMouseWheel(wheelOffset);
     wheelOffset = 0;
     var view = camera.GetLookAt();
+    for (var i = 0; i * 0.0001 < dt / 3; i++)
+        gyroscope.Update(0.0001);
     shader.use();
     shader.setMat4("view", view);
     shader.setVec3("viewPos", camera.position);
@@ -217,6 +235,7 @@ function draw() {
         shader.setMat4("model", model_1.modelMat);
         exports.gl.drawArrays(exports.gl.TRIANGLES, 0, model_1.array.size);
     }
+    lastTime = currentTime;
     window.requestAnimationFrame(draw);
 }
 startup();
@@ -7861,7 +7880,6 @@ var obj = __importStar(__webpack_require__(9));
 var Model = /** @class */ (function () {
     function Model() {
     }
-    Model.prototype.Update = function () { };
     return Model;
 }());
 exports.Model = Model;
@@ -8346,16 +8364,112 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var model = __importStar(__webpack_require__(2));
+var glm = __importStar(__webpack_require__(1));
 var objmodels = __importStar(__webpack_require__(3));
+var g = 9.80665;
+var pi = 3.1415926535897932;
 var Gyroscope = /** @class */ (function () {
     function Gyroscope() {
+        this.mass = 0.1;
+        this.radius = 0.08;
+        this.length = 0.2;
+        this.psi = 0;
+        this.psi_dot = 500;
+        this.phi = 0;
+        this.phi_dot = 0;
+        this.theta = 1.5707963267948966;
+        this.theta_dot = 0;
+        this.time = 0;
+        this.diskPos = [];
+        this.disk = new Disk();
+        this.axis = new Axis();
+        this.box = new Box();
+        this.stand = new Stand();
+        model.LoadModel(objmodels.axis, "assets/AxisMat.png", this.axis);
+        model.LoadModel(objmodels.box, "assets/boxMat.png", this.box);
+        model.LoadModel(objmodels.disk, "assets/DiskMat.png", this.disk);
+        model.LoadModel(objmodels.stand, "assets/standMat.png", this.stand);
+        this.CalculateConstants();
+        this.CalculateDiskPos();
+        this.disk.Update(this.diskPos, 0, 0, 0);
     }
-    // Свойства
-    Gyroscope.prototype.Update = function () {
-        this.stand.Update();
-        this.box.Update();
-        this.axis.Update();
-        this.disk.Update();
+    Gyroscope.prototype.Update = function (dt) {
+        this.time += dt;
+        var prevPsi = this.psi;
+        var prevPhi = this.phi;
+        this.CalculateValues(dt);
+        this.CalculateDiskPos();
+        this.box.Update(this.phi - prevPhi);
+        this.axis.Update(this.phi - prevPhi, this.theta - pi / 2);
+        this.disk.Update(this.diskPos, this.psi - prevPsi, this.phi - prevPhi, this.theta - pi / 2);
+    };
+    Gyroscope.prototype.CalculateValues = function (dt) {
+        var K1 = [];
+        K1.push(dt * this.dy1(this.theta));
+        K1.push(dt * this.dy1(this.theta + K1[0] / 2));
+        K1.push(dt * this.dy1(this.theta + K1[1] / 2));
+        K1.push(dt * this.dy1(this.theta + K1[2]));
+        this.theta_dot += (K1[0] + 2 * K1[1] + 2 * K1[2] + K1[3]) / 6;
+        var K2 = [];
+        K2.push(dt * this.dy2(this.theta_dot));
+        K2.push(dt * this.dy2(this.theta_dot + K2[0] / 2));
+        K2.push(dt * this.dy2(this.theta_dot + K2[1] / 2));
+        K2.push(dt * this.dy2(this.theta_dot + K2[2]));
+        this.theta += (K2[0] + 2 * K2[1] + 2 * K2[2] + K2[3]) / 6;
+        this.phi_dot = this.L_phi - this.L_psi * Math.cos(this.theta);
+        this.phi_dot /= this.I0;
+        this.phi_dot /= Math.sin(this.theta);
+        this.phi_dot /= Math.sin(this.theta);
+        this.psi_dot = this.L_psi / this.I_psi;
+        this.psi_dot -= this.phi_dot * Math.cos(this.theta);
+        var K3 = [];
+        K3.push(dt * this.dy3(this.theta));
+        K3.push(dt * this.dy3(this.theta + K3[0] / 2));
+        K3.push(dt * this.dy3(this.theta + K3[1] / 2));
+        K3.push(dt * this.dy3(this.theta + K3[2]));
+        this.phi += (K3[0] + 2 * K3[1] + 2 * K3[2] + K3[3]) / 6;
+        var K4 = [];
+        K4.push(dt * this.dy4(this.theta));
+        K4.push(dt * this.dy4(this.theta + K4[0] / 2));
+        K4.push(dt * this.dy4(this.theta + K4[1] / 2));
+        K4.push(dt * this.dy4(this.theta + K4[2]));
+        this.psi += (K4[0] + 2 * K4[1] + 2 * K4[2] + K4[3]) / 6;
+    };
+    Gyroscope.prototype.CalculateConstants = function () {
+        this.I_psi = 0.5 * this.mass * this.radius * this.radius;
+        this.I0 = this.mass * this.length * this.length + this.I_psi * 0.5;
+        this.L_psi = this.I_psi * (this.phi_dot * Math.cos(this.theta) + this.psi_dot);
+        this.L_phi = this.I0 * this.phi_dot * Math.sin(this.theta) * Math.sin(this.theta) + this.L_psi * Math.cos(this.theta);
+    };
+    Gyroscope.prototype.CalculateDiskPos = function () {
+        var radius = 0.56 + 10 * this.length;
+        this.diskPos = [
+            Math.cos(pi / 2 - this.theta) * Math.sin(this.phi) * radius,
+            Math.sin(pi / 2 - this.theta) * radius,
+            Math.cos(pi / 2 - this.theta) * Math.cos(this.phi) * radius,
+        ];
+    };
+    Gyroscope.prototype.dy1 = function (arg) {
+        var fun1 = -(this.L_phi - this.L_psi * Math.cos(arg)) * this.L_psi;
+        var fun2 = Math.cos(arg) * (this.L_phi - this.L_psi * Math.cos(arg)) * (this.L_phi - this.L_psi * Math.cos(arg));
+        var fun3 = this.mass * this.length * g * Math.sin(arg);
+        fun1 /= this.I0 * this.I0 * Math.sin(arg);
+        fun2 /= this.I0 * this.I0 * Math.sin(arg) * Math.sin(arg) * Math.sin(arg);
+        fun3 /= this.I0;
+        return fun1 + fun2 + fun3;
+    };
+    Gyroscope.prototype.dy2 = function (arg) {
+        return arg;
+    };
+    Gyroscope.prototype.dy3 = function (arg) {
+        var fun1 = this.L_phi - this.L_psi * Math.cos(arg);
+        var fun2 = this.I0 * Math.sin(arg) * Math.sin(arg);
+        return fun1 / fun2;
+    };
+    Gyroscope.prototype.dy4 = function (arg) {
+        var fun1 = this.L_psi / this.I_psi;
+        var fun2 = this.phi_dot * Math.cos(arg);
+        return fun1 - fun2;
     };
     return Gyroscope;
 }());
@@ -8363,40 +8477,65 @@ exports.Gyroscope = Gyroscope;
 var Stand = /** @class */ (function () {
     function Stand() {
     }
-    Stand.prototype.Update = function () { };
     return Stand;
 }());
 var Box = /** @class */ (function () {
     function Box() {
     }
-    Box.prototype.Update = function () { };
+    Box.prototype.Update = function (dPhi) {
+        glm.mat4.rotateY(this.modelMat, this.modelMat, dPhi);
+    };
     return Box;
 }());
 var Axis = /** @class */ (function () {
     function Axis() {
+        this.nutation = glm.mat4.create();
+        this.precession = glm.mat4.create();
+        this.rotation = glm.mat4.create();
+        this.translation = glm.mat4.create();
+        glm.mat4.identity(this.nutation);
+        glm.mat4.identity(this.precession);
+        glm.mat4.identity(this.rotation);
+        glm.mat4.identity(this.translation);
     }
-    Axis.prototype.Update = function () { };
+    Axis.prototype.Update = function (dPhi, dTheta) {
+        glm.mat4.identity(this.translation);
+        glm.mat4.identity(this.nutation);
+        glm.mat4.rotateX(this.nutation, this.nutation, dTheta);
+        glm.mat4.rotateY(this.precession, this.precession, dPhi);
+        glm.mat4.mul(this.rotation, this.precession, this.nutation);
+        glm.mat4.identity(this.modelMat);
+        glm.mat4.mul(this.modelMat, this.translation, this.rotation);
+    };
     return Axis;
 }());
 var Disk = /** @class */ (function () {
     function Disk() {
+        this.nutation = glm.mat4.create();
+        this.precession = glm.mat4.create();
+        this.rotation = glm.mat4.create();
+        this.translation = glm.mat4.create();
+        this.diskRotation = glm.mat4.create();
+        glm.mat4.identity(this.nutation);
+        glm.mat4.identity(this.precession);
+        glm.mat4.identity(this.diskRotation);
+        glm.mat4.identity(this.rotation);
+        glm.mat4.identity(this.translation);
     }
-    Disk.prototype.Update = function () { };
+    Disk.prototype.Update = function (diskPos, dPsi, dPhi, dTheta) {
+        glm.mat4.identity(this.translation);
+        glm.mat4.translate(this.translation, this.translation, new Float32Array(diskPos));
+        glm.mat4.identity(this.nutation);
+        glm.mat4.rotateX(this.nutation, this.nutation, dTheta);
+        glm.mat4.rotateY(this.precession, this.precession, dPhi);
+        glm.mat4.rotateZ(this.diskRotation, this.diskRotation, dPsi);
+        glm.mat4.mul(this.rotation, this.nutation, this.diskRotation);
+        glm.mat4.mul(this.rotation, this.precession, this.rotation);
+        glm.mat4.identity(this.modelMat);
+        glm.mat4.mul(this.modelMat, this.translation, this.rotation);
+    };
     return Disk;
 }());
-function LoadGyroscope() {
-    var gyro = new Gyroscope();
-    gyro.disk = new Disk();
-    gyro.axis = new Axis();
-    gyro.box = new Box();
-    gyro.stand = new Stand();
-    model.LoadModel(objmodels.axis, "assets/AxisMat.png", gyro.axis);
-    model.LoadModel(objmodels.box, "assets/boxMat.png", gyro.box);
-    model.LoadModel(objmodels.disk, "assets/DiskMat.png", gyro.disk);
-    model.LoadModel(objmodels.stand, "assets/standMat.png", gyro.stand);
-    return gyro;
-}
-exports.LoadGyroscope = LoadGyroscope;
 
 
 /***/ }),
@@ -8406,7 +8545,7 @@ exports.LoadGyroscope = LoadGyroscope;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.vertBase = "#version 300 es\n    layout(location = 0) in vec3 pos;\n    layout(location = 1) in vec3 normal;\n    layout(location = 2) in vec2 uv;\n\n    uniform mat4 model;\n    uniform mat4 view;\n    uniform mat4 proj;\n\n    out vec3 v_pos;\n    out vec3 v_normal;\n    out vec2 v_uv;\n\n    void main() {\n      gl_Position = proj * view * model * vec4(pos, 1.0);\n      v_pos = vec3(model * vec4(pos, 1.0));\n      v_normal = normal;\n      v_uv = vec2(uv.x, -uv.y);\n    }";
+exports.vertBase = "#version 300 es\n    layout(location = 0) in vec3 pos;\n    layout(location = 1) in vec3 normal;\n    layout(location = 2) in vec2 uv;\n\n    uniform mat4 model;\n    uniform mat4 view;\n    uniform mat4 proj;\n\n    out vec3 v_pos;\n    out vec3 v_normal;\n    out vec2 v_uv;\n\n    void main() {\n      gl_Position = proj * view * model * vec4(pos, 1.0);\n      v_pos = vec3(model * vec4(pos, 1.0));\n      v_normal =  mat3(transpose(inverse(model))) * normal;\n      v_uv = vec2(uv.x, -uv.y);\n    }";
 exports.FragBase = "#version 300 es\n    #ifdef GL_ES\n        precision highp float;\n    #endif\n\n    in vec3 v_pos;\n    in vec3 v_normal;\n    in vec2 v_uv;\n\n    out vec4 color;\n\n    const float density = 0.07;\n    const float gradient = 7.0;\n\n\n    uniform vec3 viewPos;\n    uniform sampler2D diffuse_tex;\n\n    struct DirectionalLight \n    {\n        vec3 direction;\n\n        vec3 ambient;\n        vec3 diffuse;\n        vec3 specular;\n    };\n\n    uniform DirectionalLight lights[20];\n\n    vec3 CalcDirLight(DirectionalLight light, vec3 normal, vec3 viewDir)\n    {\n        vec3 lightDir = normalize(-light.direction);\n        // diffuse\n        float diff = max(dot(normal, lightDir), 0.0);\n\n        // specular\n        vec3 reflectDir = reflect(-lightDir, normal);\n        float max_spec = max(dot(viewDir, reflectDir), 0.0);\n\n        float spec = max_spec;\n        for (int i = 0; i < 32; i++)\n            spec *= max_spec;\n\n        // combine results\n        vec3 ambient  = light.ambient;\n        vec3 diffuse  = light.diffuse  * diff * vec3(texture(diffuse_tex, v_uv));\n        vec3 specular = light.specular * spec;\n        return (ambient + diffuse + specular);\n    } \n\n    void main() \n    {\n        vec3 norm = normalize(v_normal);\n        vec3 viewDir = normalize(viewPos - v_pos);\n\n        vec3 result = vec3(0.0, 0.0, 0.0);\n        for (int i = 0; i < 20; i++)\n            result += CalcDirLight(lights[i], norm, viewDir);\n\n        vec2 p = vec2(v_pos.x, v_pos.z);\n        float distance = length(p);\n        float visibility = exp(-pow((distance * density), gradient));\n        visibility = clamp(visibility, 0.0, 1.0);\n\n        color = mix(vec4(0.82, 0.88, 0.94, 1.0), vec4(result, 1.0), visibility);\n    }";
 
 

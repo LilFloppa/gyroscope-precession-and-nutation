@@ -14,7 +14,7 @@ export const vertBase: string = `#version 300 es
     void main() {
       gl_Position = proj * view * model * vec4(pos, 1.0);
       v_pos = vec3(model * vec4(pos, 1.0));
-      v_normal = normal;
+      v_normal =  mat3(transpose(inverse(model))) * normal;
       v_uv = vec2(uv.x, -uv.y);
     }`;
 

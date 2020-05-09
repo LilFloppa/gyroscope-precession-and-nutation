@@ -7,22 +7,16 @@ import * as obj from "obj-file-parser-ts";
 
 export interface IModel {
   array: VertexArray;
-  shader: Shader;
   texture: Texture;
 
   modelMat: glm.mat4;
-
-  Update(): void;
 }
 
 export class Model implements IModel {
   array: VertexArray;
-  shader: Shader;
   texture: Texture;
 
   modelMat: glm.mat4;
-
-  Update(): void {}
 }
 
 class Vertex {
