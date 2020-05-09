@@ -56,6 +56,7 @@
 .content
 	display: flex
 	height: calc(100vh - 36px)
+	position: relative
 	&__scene
 		flex-basis: 75%
 	&__interface
@@ -100,10 +101,7 @@
 		display: flex
 
 .popup
-	position: fixed
-	left: 50%
-	top: 50%
-	transform: translate(-50%, -50%)
+	position: absolute
 	visibility: hidden
 	opacity: 0
 	transition: opacity .4s, visibility .4s

@@ -93,7 +93,7 @@ $(function() {
 				}
 
 				let minute  = (min < 10) ? '0' + min : min,
-						second  = (sec < 10) ? '0' + sec : sec;
+				second  = (sec < 10) ? '0' + sec : sec;
 
 				$('.timer__minutes').html(minute);
 				$('.timer__seconds').html(second);
@@ -122,48 +122,48 @@ $(function() {
 		$(".popup").not(this).css("z-index", "10" + popup_count - 1);
 	});
 
-	function OnClickPopupLink(link, popup, handleID, dragID, index) {
+	function OnClickPopupLink(link, popup, handleID, dragID) {
 		$(link).addClass('disabled').closest("li").addClass('disabled');
 
 		if (!($(popup).hasClass('active')))
 			popup_count++;
 
 		$(popup).addClass('active');
-		Drag(handleID, dragID, index);
+		Drag(handleID, dragID, popup_count);
 	}
 
 
 	/* Show popup */
 	$('.theta-from-phi-link').click(function() {
-		OnClickPopupLink(this, ".popup-theta-from-phi", "handleThetaFromPhi", "dragThetaFromPhi", 0);
+		OnClickPopupLink(this, ".popup-theta-from-phi", "handleThetaFromPhi", "dragThetaFromPhi");
 	});
 
 	$('.theta-from-t-link').click(function() {
-		OnClickPopupLink(this, ".popup-theta-from-t", "handleThetaFromT", "dragThetaFromT", 1);
+		OnClickPopupLink(this, ".popup-theta-from-t", "handleThetaFromT", "dragThetaFromT");
 	});
 
 	$('.kinetic-link').click(function() {
-		OnClickPopupLink(this, ".popup-kinetic", "handleKinetic", "dragKinetic", 2);		
+		OnClickPopupLink(this, ".popup-kinetic", "handleKinetic", "dragKinetic");		
 	});
 
 	$('.potential-link').click(function() {
-		OnClickPopupLink(this, ".popup-potential", "handlePotential", "dragPotential", 3);		
+		OnClickPopupLink(this, ".popup-potential", "handlePotential", "dragPotential");		
 	});
 
 	$('.total-link').click(function() {
-		OnClickPopupLink(this, ".popup-total", "handleTotal", "dragTotal", 4);		
+		OnClickPopupLink(this, ".popup-total", "handleTotal", "dragTotal");		
 	});
 
 	$('.manual-link').click(function() {
-		OnClickPopupLink(this, ".popup-manual", "handleManual", "dragManual", 5);		
+		OnClickPopupLink(this, ".popup-manual", "handleManual", "dragManual");		
 	});
 
 	$('.theory-link').click(function() {
-		OnClickPopupLink(this, ".popup-theory", "handleTheory", "dragTheory", 6);		
+		OnClickPopupLink(this, ".popup-theory", "handleTheory", "dragTheory");		
 	});
 
 	$('.developers-link').click(function() {
-		OnClickPopupLink(this, ".popup-developers", "handleDevelopers", "dragDevelopers", 7);		
+		OnClickPopupLink(this, ".popup-developers", "handleDevelopers", "dragDevelopers");		
 	});
 
 
@@ -211,19 +211,19 @@ $(function() {
 /* Dock panel */
 function Drag(handleID, dragID, index) {
 	let mousePosition,
-			offset = [0, 0],
-			handle = document.getElementById(handleID),
-			drag = document.getElementById(dragID),
-			isDown = false;
+	offset = [0, 0],
+	handle = document.getElementById(handleID),
+	drag = document.getElementById(dragID),
+	isDown = false;
 
 	if (index <= 2)
-		drag.style.top = "calc(50% + " + 40 * index + "px)";
+		drag.style.top = 100 + 40 * index + "px";
 	else if (index > 4)
-		drag.style.top = "calc(50% + " + 40 * (index - 4) + "px)";
+		drag.style.top = 100 + 40 * (index - 4) + "px";
 	else
-		drag.style.top = "calc(50% + " + (-40 * (index - 4)) + "px)";
+		drag.style.top = 100 + (-40 * (index - 4)) + "px";
 
-	drag.style.left = "calc(50% + " + 40 * index + "px)";
+	drag.style.left = 320 + 40 * index + "px";
 
 	handle.addEventListener('mousedown', function(e) {
 		isDown = true;
@@ -235,8 +235,25 @@ function Drag(handleID, dragID, index) {
 	document.addEventListener('mousemove', function(event) {
 		if (isDown) {
 			mousePosition = { x : event.clientX, y : event.clientY };
+
 			drag.style.left = (mousePosition.x + offset[0]) + 'px';
 			drag.style.top  = (mousePosition.y + offset[1]) + 'px';
+
+			let container = document.getElementById("container");
+			
+			if (drag.offsetTop < 0)
+				drag.style.top = "0px";
+
+			if (drag.offsetLeft < 0)
+				drag.style.left = "0px";
+
+			if (drag.offsetTop + drag.clientHeight > container.clientHeight - 2)
+				drag.style.top = container.clientHeight - drag.clientHeight - 2 + "px";
+
+			if (drag.offsetLeft + drag.clientWidth > container.clientWidth)
+				drag.style.left = container.clientWidth - drag.clientWidth + "px";
+
+			// console.log(top, drag.style.top, drag.offsetTop, rect.top, window.pageYOffset, offsetY);
 		}
 	}, true);
 
