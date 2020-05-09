@@ -4,6 +4,7 @@
 
 .header-menu__list
 	display: flex
+	user-select: none
 	li
 		position: relative
 		transition: all .3s linear
@@ -35,6 +36,8 @@
 		border-top: 1px solid #ECF1F2
 		&:hover
 			border-top: 1px solid lighten($accent, 25%)
+		&:not(:first-child).disabled
+			border-top: 1px solid #c7c7cb
 	a
 		&:hover
 			transform: translateX(5px)
@@ -96,13 +99,63 @@
 	&__buttons
 		display: flex
 
-.draggable
+.popup
+	position: fixed
+	left: 50%
+	top: 50%
+	transform: translate(-50%, -50%)
+	visibility: hidden
+	opacity: 0
+	transition: opacity .4s, visibility .4s
+	z-index: 100
+	overflow: hidden
+	background-color: transparent
+	box-shadow: 0 5px 25px rgba(#000, .4)
+	border-radius: 10px
+	border: 1px solid #356aa0
+	&.active
+		visibility: visible
+		opacity: 1
+		transition: opacity .4s, visibility .4s
+
+.handle
+	padding: 7px 10px 7px 38px
+	font-size: 18px
+	background-color: #ededed
+	cursor: pointer
+	user-select: none
+	position: relative
+	&::before
+		content: ''
+		background-image: url(../img/icon-small.jpg)
+		background-repeat: no-repeat
+		background-position: left center
+		background-size: 18px
+		position: absolute
+		top: 10px
+		left: 10px
+		width: 18px
+		height: 18px
+		border-radius: 5px
+
+.close
+	cursor: pointer
+	width: 24px
+	height: 24px
+	padding: 5px
+	background: none
+	border: 0
 	position: absolute
-	left: 0
-	top: 0
-	width: 100px
-	height: 100px
-	background: blue
+	top: 8px
+	right: 10px
+	user-select: none
+
+.plot
+	height: 600px
+	width: 600px
+	border-radius: 0
+	border: 0
+	background-color: #fff
 
 
 
