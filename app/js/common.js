@@ -122,8 +122,8 @@ $(function() {
 		$(".popup").not(this).css("z-index", "10" + popup_count - 1);
 	});
 
-	function OnClickPopupLink(link, popup, handleID, dragID) {
-		$(link).addClass('disabled').closest("li").addClass('disabled');
+	function OnClickNav(nav, popup, handleID, dragID) {
+		$(nav).addClass('disabled').closest("li").addClass('disabled');
 
 		if (!($(popup).hasClass('active')))
 			popup_count++;
@@ -134,36 +134,36 @@ $(function() {
 
 
 	/* Show popup */
-	$('.theta-from-phi-link').click(function() {
-		OnClickPopupLink(this, ".popup-theta-from-phi", "handleThetaFromPhi", "dragThetaFromPhi");
+	$('.theta-from-phi').click(function() {
+		OnClickNav(this, ".popup-theta-from-phi", "handleThetaFromPhi", "dragThetaFromPhi");
 	});
 
-	$('.theta-from-t-link').click(function() {
-		OnClickPopupLink(this, ".popup-theta-from-t", "handleThetaFromT", "dragThetaFromT");
+	$('.theta-from-t').click(function() {
+		OnClickNav(this, ".popup-theta-from-t", "handleThetaFromT", "dragThetaFromT");
 	});
 
-	$('.kinetic-link').click(function() {
-		OnClickPopupLink(this, ".popup-kinetic", "handleKinetic", "dragKinetic");		
+	$('.kinetic').click(function() {
+		OnClickNav(this, ".popup-kinetic", "handleKinetic", "dragKinetic");		
 	});
 
-	$('.potential-link').click(function() {
-		OnClickPopupLink(this, ".popup-potential", "handlePotential", "dragPotential");		
+	$('.potential').click(function() {
+		OnClickNav(this, ".popup-potential", "handlePotential", "dragPotential");		
 	});
 
-	$('.total-link').click(function() {
-		OnClickPopupLink(this, ".popup-total", "handleTotal", "dragTotal");		
+	$('.total').click(function() {
+		OnClickNav(this, ".popup-total", "handleTotal", "dragTotal");		
 	});
 
-	$('.manual-link').click(function() {
-		OnClickPopupLink(this, ".popup-manual", "handleManual", "dragManual");		
+	$('.manual').click(function() {
+		OnClickNav(this, ".popup-manual", "handleManual", "dragManual");		
 	});
 
-	$('.theory-link').click(function() {
-		OnClickPopupLink(this, ".popup-theory", "handleTheory", "dragTheory");		
+	$('.theory').click(function() {
+		OnClickNav(this, ".popup-theory", "handleTheory", "dragTheory");		
 	});
 
-	$('.developers-link').click(function() {
-		OnClickPopupLink(this, ".popup-developers", "handleDevelopers", "dragDevelopers");		
+	$('.developers').click(function() {
+		OnClickNav(this, ".popup-developers", "handleDevelopers", "dragDevelopers");		
 	});
 
 
@@ -174,35 +174,35 @@ $(function() {
 	});
 
 	$('.popup-theta-from-phi .close').click(function() {
-		$('.theta-from-phi-link').removeClass('disabled').closest("li").removeClass('disabled');
+		$('.theta-from-phi').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
 	$('.popup-theta-from-t .close').click(function() {
-		$('.theta-from-t-link').removeClass('disabled').closest("li").removeClass('disabled');
+		$('.theta-from-t').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
 	$('.popup-kinetic .close').click(function() {
-		$('.kinetic-link').removeClass('disabled').closest("li").removeClass('disabled');
+		$('.kinetic').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
 	$('.popup-potential .close').click(function() {
-		$('.potential-link').removeClass('disabled').closest("li").removeClass('disabled');
+		$('.potential').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
 	$('.popup-total .close').click(function() {
-		$('.total-link').removeClass('disabled').closest("li").removeClass('disabled');
+		$('.total').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
 	$('.popup-manual .close').click(function() {
-		$('.manual-link').removeClass('disabled').closest("li").removeClass('disabled');
+		$('.manual').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
 	$('.popup-theory .close').click(function() {
-		$('.theory-link').removeClass('disabled').closest("li").removeClass('disabled');
+		$('.theory').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
 	$('.popup-developers .close').click(function() {
-		$('.developers-link').removeClass('disabled').closest("li").removeClass('disabled');
+		$('.developers').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
 });
@@ -252,14 +252,10 @@ function Drag(handleID, dragID, index) {
 
 			if (drag.offsetLeft + drag.clientWidth > container.clientWidth)
 				drag.style.left = container.clientWidth - drag.clientWidth + "px";
-
-			// console.log(top, drag.style.top, drag.offsetTop, rect.top, window.pageYOffset, offsetY);
 		}
 	}, true);
 
 	drag.style.zIndex = 100 + popup_count;
-
-	// Добавить закрепление окна внизу страницы
 }
 
 
