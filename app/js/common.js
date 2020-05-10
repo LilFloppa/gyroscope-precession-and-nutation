@@ -168,40 +168,40 @@ $(function() {
 
 
 	/* Hide popup */
-	$('.close').click(function() {
+	$('.popup__close').click(function() {
 		$(this).closest('.popup').removeClass('active').css("z-index", "100");
 		popup_count--;
 	});
 
-	$('.popup-theta-from-phi .close').click(function() {
+	$('.popup-theta-from-phi .popup__close').click(function() {
 		$('.theta-from-phi').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
-	$('.popup-theta-from-t .close').click(function() {
+	$('.popup-theta-from-t .popup__close').click(function() {
 		$('.theta-from-t').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
-	$('.popup-kinetic .close').click(function() {
+	$('.popup-kinetic .popup__close').click(function() {
 		$('.kinetic').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
-	$('.popup-potential .close').click(function() {
+	$('.popup-potential .popup__close').click(function() {
 		$('.potential').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
-	$('.popup-total .close').click(function() {
+	$('.popup-total .popup__close').click(function() {
 		$('.total').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
-	$('.popup-manual .close').click(function() {
+	$('.popup-manual .popup__close').click(function() {
 		$('.manual').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
-	$('.popup-theory .close').click(function() {
+	$('.popup-theory .popup__close').click(function() {
 		$('.theory').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
-	$('.popup-developers .close').click(function() {
+	$('.popup-developers .popup__close').click(function() {
 		$('.developers').removeClass('disabled').closest("li").removeClass('disabled');
 	});
 
