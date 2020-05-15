@@ -19,22 +19,22 @@
 	<meta name="theme-color" content="#ffffff" />
 
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:100,300,400,500,800&display=swap"/>
-	<link href="https://fonts.googleapis.com/css?family=B612+Mono&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="css/main.min.css" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=B612+Mono&display=swap">
+	<link rel="stylesheet" href="css/main.min.css"/>
 </head>
 
 <body>
 
 	<div class="container" id="container">
-		<!-- Menu start -->
+		<!-- Menu begin -->
 		<header class="header">
 			<nav class="header-menu">
 				<ul class="header-menu__list">
 					<li>
 						<div>Graphs</div>
 						<ul class="submenu">
-							<li><div class="theta-from-phi">Graph of θ(φ)</div></li>
-							<li><div class="theta-from-t">Graph of θ(t)</div></li>
+							<li><div class="theta-from-phi">Graph of $$\theta \left ( \varphi  \right )$$</div></li>
+							<li><div class="theta-from-t">Graph of $$\theta \left ( t  \right )$$</div></li>
 							<li>
 								<div class="submenu__block">Energy graphs</div>
 								<ul class="submenu">
@@ -59,11 +59,11 @@
 		<!-- Menu end -->
 
 		<div class="content">
-			<!-- Scene start -->
+			<!-- Scene begin -->
 			<canvas id="canvas" class="content__scene"></canvas>
 			<!-- Scene end -->
 
-			<!-- Interface start -->
+			<!-- Interface begin -->
 			<div class="content__interface interface">
 				<div class="interface__buttons">
 					<button class="button start-main">Start</button>
@@ -133,112 +133,250 @@
 			</div>
 			<!-- Interface end -->
 		</div>
-	
 
-	<!-- Graph of θ(φ) start -->
-	<div class="popup popup-theta-from-phi" id="dragThetaFromPhi">
-		<div id="handleThetaFromPhi" class="popup__handle">Graph of θ(φ)</div>
 
-		<button class="popup__close">
+		<!-- Graph of θ(φ) begin -->
+		<div class="popup popup-theta-from-phi" id="dragThetaFromPhi">
+			<div id="handleThetaFromPhi" class="popup__handle">Graph of $$\theta \left ( \varphi  \right )$$</div>
+
+			<button class="popup__close">
 				<img src="img/close.svg" alt="Close">
-		</button>
+			</button>
 
-		<div id="ThetaFromPhi" class="jxgbox popup__content"></div>
-	</div>
-	<!-- Graph of θ(φ) end -->
-
-
-	<!-- Graph of θ(t) start -->
-	<div class="popup popup-theta-from-t" id="dragThetaFromT">
-		<div id="handleThetaFromT" class="popup__handle">Graph of θ(t)</div>
-
-		<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-		</button>
-
-		<div id="ThetaFromT" class="jxgbox popup__content"></div>
-	</div>
-	<!-- Graph of θ(t) end -->
-
-
-	<!-- Kinetic energy start -->
-	<div class="popup popup-kinetic" id="dragKinetic">
-		<div id="handleKinetic" class="popup__handle">Kinetic energy</div>
-
-		<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-		</button>
-
-		<div id="kinetic" class="jxgbox popup__content"></div>
-	</div>
-	<!-- Kinetic energy end -->
-
-
-	<!-- Potential energy start -->
-	<div class="popup popup-potential" id="dragPotential">
-		<div id="handlePotential" class="popup__handle">Potential energy</div>
-
-		<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-		</button>
-
-		<div id="potential" class="jxgbox popup__content"></div>
-	</div>
-	<!-- Potential energy end -->
-
-
-	<!-- Total energy start -->
-	<div class="popup popup-total" id="dragTotal">
-		<div id="handleTotal" class="popup__handle">Total energy</div>
-
-		<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-		</button>
-
-		<div id="total" class="jxgbox popup__content"></div>
-	</div>
-	<!-- Total energy end -->
-
-
-	<!-- User's manual start -->
-	<div class="popup popup-manual" id="dragManual">
-		<div id="handleManual" class="popup__handle">User's manual</div>
-
-		<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-		</button>
-
-		<div class="popup__content"></div>
-	</div>
-	<!-- User's manual end -->
-
-
-	<!-- Theory start -->
-	<div class="popup popup-theory" id="dragTheory">
-		<div id="handleTheory" class="popup__handle">Theory</div>
-
-		<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-		</button>
-
-		<div class="popup__content"></div>
-	</div>
-	<!-- Theory end -->
-
-
-	<!-- Developers start -->
-	<div class="popup popup-developers" id="dragDevelopers">
-		<div id="handleDevelopers" class="popup__handle">Developers</div>
-
-		<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-		</button>
-
-		<div class="popup__content">
-			<img src="img/developers.jpg" alt="Developers">
+			<div id="ThetaFromPhi" class="jxgbox popup__content"></div>
 		</div>
-	</div>
-	<!-- Developers end -->
+		<!-- Graph of θ(φ) end -->
+
+
+		<!-- Graph of θ(t) begin -->
+		<div class="popup popup-theta-from-t" id="dragThetaFromT">
+			<div id="handleThetaFromT" class="popup__handle">Graph of $$\theta \left ( t  \right )$$</div>
+
+			<button class="popup__close">
+				<img src="img/close.svg" alt="Close">
+			</button>
+
+			<div id="ThetaFromT" class="jxgbox popup__content"></div>
+		</div>
+		<!-- Graph of θ(t) end -->
+
+
+		<!-- Kinetic energy begin -->
+		<div class="popup popup-kinetic" id="dragKinetic">
+			<div id="handleKinetic" class="popup__handle">Kinetic energy</div>
+
+			<button class="popup__close">
+				<img src="img/close.svg" alt="Close">
+			</button>
+
+			<div id="kinetic" class="jxgbox popup__content"></div>
+		</div>
+		<!-- Kinetic energy end -->
+
+
+		<!-- Potential energy begin -->
+		<div class="popup popup-potential" id="dragPotential">
+			<div id="handlePotential" class="popup__handle">Potential energy</div>
+
+			<button class="popup__close">
+				<img src="img/close.svg" alt="Close">
+			</button>
+
+			<div id="potential" class="jxgbox popup__content"></div>
+		</div>
+		<!-- Potential energy end -->
+
+
+		<!-- Total energy begin -->
+		<div class="popup popup-total" id="dragTotal">
+			<div id="handleTotal" class="popup__handle">Total energy</div>
+
+			<button class="popup__close">
+				<img src="img/close.svg" alt="Close">
+			</button>
+
+			<div id="total" class="jxgbox popup__content"></div>
+		</div>
+		<!-- Total energy end -->
+
+
+		<!-- User's manual begin -->
+		<div class="popup popup-manual" id="dragManual">
+			<div id="handleManual" class="popup__handle">User's manual</div>
+
+			<button class="popup__close">
+				<img src="img/close.svg" alt="Close">
+			</button>
+
+			<div class="popup__content"></div>
+		</div>
+		<!-- User's manual end -->
+
+
+		<!-- Theory begin -->
+		<div class="popup popup-theory" id="dragTheory">
+			<div id="handleTheory" class="popup__handle">Theory</div>
+
+			<button class="popup__close">
+				<img src="img/close.svg" alt="Close">
+			</button>
+
+			<div class="popup__content popup__text">
+				<p>
+					According to Merriam-Webster dictionary [1], gyroscope is a wheel or disks mounted to spin rapidly
+					about an axis and also free to rotate about one or both of two axes perpendicular to each other and to
+					the axis of spin. So a rotation of one of the two mutually perpendicular axes results from application of
+					torque to the other when the wheel is spinning and so that the entire apparatus offers considerable
+					opposition depending on the angular momentum to any torque that would change the direction of the
+					axis of spin [1].
+				</p>
+
+				<p>
+					If the axis of a spinning gyroscope is inclined to the vertical, its axis generates in space a circular
+					cone, so that the angle between the axis and the vertical remains constant during rotation. This kind of
+					motion of a gyroscope that is subjected to an external torque is called forced or torque-induced
+					precession. In the general case, i.e., for arbitrary initial conditions, the motion of a gyroscope is a
+					superposition of forced regular precession and nutation. Nutation of a fast-spinning gyroscope reveals
+					itself as (small) vibration and shivering of the precessing axis [2].
+				</p>
+
+				<p>
+					Figure 1 schematically shows a gyroscope, the mechanical motion of which is associated with
+					rotation around its own axis, precession and nutation.
+				</p>
+
+				<img src="img/gyroscope.jpg" alt="Gyroscope">
+				<div class="caption"><b>Figure 1.</b> Gyroscope.</div>
+
+				<p>
+					The Euler angles $$\psi$$, $$\varphi$$ and $$\theta$$ are used to describe the gyroscope motion. The angle $$\psi$$ 
+					describes the gyroscope rotation around its own axis, the angle $$\varphi$$ describes the gyroscope precession, and the
+					angle $$\theta$$ describes the gyroscope nutation.
+				</p>
+
+				<p>
+					The Lagrange method was used to construct a mathematical model of gyroscope motion. The
+					method allows obtaining differential equations of motion for the Euler angles. We used the
+					approximation of the weightless axis and the absence of friction. The Lagrange function is the
+					difference between the kinetic and potential energies of the gyroscope [3]:
+				</p>
+
+				<span class="equation">
+					<span></span>
+
+					<span>
+						$$L=\frac{I_{0}}{2} \left ( \dot{\theta}^{2} + \dot{\varphi}^{2} sin^{2}\theta  \right ) + 
+						\frac{I_{\psi}}{2} \left ( \dot{\psi} + \dot{\varphi} cos\theta \right )^{2} \! -
+						mg$$<span class="thin-space">$$l$$</span><span class="thin-space">$$cos\theta ,$$</span>
+					</span>
+
+					<span>$$(1)$$</span>
+				</span>
+
+				<p class="no-indent">
+					where: <br>
+					$$I_{0}$$ – the moment of inertia of the gyroscope about the $$x_{1}$$- and $$y_{1}$$-axes, perpendicular to the $$z_{1}$$-axis,<br>
+					$$I_{\psi}$$ – the moment of inertia about the $$z_{1}$$-axis, <br>
+					$$m$$ – the disk mass, <br>
+					$$l$$ – the distance from the origin of coordinates to the disk.
+				</p>
+
+				<p>
+					The moment vector of the force is directed perpendicular to the directions of gravity and the axes $$z$$ and $$z_{1}$$. Hence [11]:
+				</p>
+
+				<span class="equation">
+					<span></span>
+
+					<span>
+						$$L_{\psi}=\frac{\partial L}{\partial \dot{\psi}}=I_{\psi} \left ( \dot{\psi} + \dot{\varphi} cos\theta  \right )=const,$$
+					</span>
+
+					<span>$$(2)$$</span>
+				</span>
+
+				<span class="equation">
+					<span></span>
+
+					<span>
+						$$L_{\varphi}=\frac{\partial L}{\partial \dot{\varphi}}=\left (I_{0} sin^{2}\theta + I_{\psi} cos^{2}\theta \right ) \dot{\varphi} + I_{\psi} \dot{\psi} cos\theta = const,$$
+					</span>
+
+					<span>$$(3)$$</span>
+				</span>
+
+				<p class="no-indent">
+					where: <br>
+					$$L_{\psi}$$ is the angular momentum of the disk along the $$z_{1}$$-axis, <br>
+					$$L_{\varphi}$$ is the angular momentum along the $$z$$-axis.
+				</p>
+
+				<p>
+					From equations $$(2)$$ and $$(3)$$ we obtain:
+				</p>
+
+				<span class="equation">
+					<span></span>
+
+					<span>
+						$$\dot{\varphi}=\frac{L_{\varphi}-L_{\psi} cos\theta}{I_{0} sin^{2}\theta},$$
+					</span>
+
+					<span>$$(4)$$</span>
+				</span>
+
+				<span class="equation">
+					<span></span>
+
+					<span>
+						$$\dot{\psi}=\frac{L_{\psi}}{I_{\psi}}-\frac{L_{\varphi}-L_{\psi} cos\theta}{I_{0} sin^{2}\theta} cos\theta.$$
+					</span>
+
+					<span>$$(5)$$</span>
+				</span>
+
+				<p>
+					From the Euler-Lagrange equation, we obtain the third equation of motion [4]:
+				</p>
+
+				<span class="equation">
+					<span></span>
+
+					<span>
+						$$I_{0} \ddot{\theta}=-\frac{\left ( L_{\varphi}-L_{\psi} cos\theta \right ) L_{\psi}}{I_{0} sin\theta} + \frac{cos\theta \left ( L_{\varphi}-L_{\psi} cos\theta \right )^{2}}{I_{0} sin^{3}\theta} + mg$$<span class="thin-space">$$l$$</span><span class="thin-space">$$sin\theta$$</span>
+					</span>
+
+					<span>$$(6)$$</span>
+				</span>
+
+				<p style="margin-bottom: 50px;">
+					Equations $$(4)\, -\,(6)$$ are differential equations of the gyroscope motion in the Euler angles representation.
+				</p>
+
+				<p class="no-indent">
+					[1] <a class="inline-link" href="https://www.merriam-webster.com/dictionary">https://www.merriam-webster.com/dictionary</a><br>
+					[2] Butikov E 2006 European Journal of Physics 27 1071 <br>
+					[3] Landau L.D. and Lifshitz E.M. 1976 Mechanics (New York: Pergamon Press) <br>
+					[4] Marion J.B. and Thornton S.T. 1995 Classical Dynamics of Particles and Systems (Saunders College Publishing)
+				</p>
+			</div> 
+		</div>
+		<!-- Theory end -->
+
+
+		<!-- Developers begin -->
+		<div class="popup popup-developers" id="dragDevelopers">
+			<div id="handleDevelopers" class="popup__handle">Developers</div>
+
+			<button class="popup__close">
+				<img src="img/close.svg" alt="Close">
+			</button>
+
+			<div class="popup__content">
+				<img src="img/developers.jpg" alt="Developers">
+			</div>
+		</div>
+		<!-- Developers end -->
 	</div>
 
 	<script src="js/scripts.min.js"></script>

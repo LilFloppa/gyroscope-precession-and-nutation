@@ -217,13 +217,17 @@ function Drag(handleID, dragID, index) {
 	isDown = false;
 
 	if (index <= 2)
-		drag.style.top = 100 + 40 * index + "px";
-	else if (index > 4)
-		drag.style.top = 100 + 40 * (index - 4) + "px";
+		drag.style.top = 50 + 40 * index + "px";
+	else if (index > 4 && index < 8)
+		drag.style.top = 50 + 40 * (index - 4) + "px";
+	else if (index == 8)
+		drag.style.top = 50 + 40 * (index - 6) + "px";
 	else
-		drag.style.top = 100 + (-40 * (index - 4)) + "px";
+		drag.style.top = 50 + (-40 * (index - 4)) + "px";
 
-	drag.style.left = 320 + 40 * index + "px";
+	drag.style.left = 300 + 40 * index + "px";
+
+	Position(dragID);
 
 	handle.addEventListener('mousedown', function(e) {
 		isDown = true;
@@ -239,23 +243,28 @@ function Drag(handleID, dragID, index) {
 			drag.style.left = (mousePosition.x + offset[0]) + 'px';
 			drag.style.top  = (mousePosition.y + offset[1]) + 'px';
 
-			let container = document.getElementById("container");
-			
-			if (drag.offsetTop < 0)
-				drag.style.top = "0px";
-
-			if (drag.offsetLeft < 0)
-				drag.style.left = "0px";
-
-			if (drag.offsetTop + drag.clientHeight > container.clientHeight - 2)
-				drag.style.top = container.clientHeight - drag.clientHeight - 2 + "px";
-
-			if (drag.offsetLeft + drag.clientWidth > container.clientWidth)
-				drag.style.left = container.clientWidth - drag.clientWidth + "px";
+			Position(dragID);
 		}
 	}, true);
 
 	drag.style.zIndex = 100 + popup_count;
+}
+
+function Position(dragID) {
+	let drag 			= document.getElementById(dragID),
+			container = document.getElementById("container");
+
+	if (drag.offsetTop < 0)
+		drag.style.top = "0px";
+
+	if (drag.offsetLeft < 0)
+		drag.style.left = "0px";
+
+	if (drag.offsetTop + drag.clientHeight > container.clientHeight - 2)
+		drag.style.top = container.clientHeight - drag.clientHeight - 2 + "px";
+
+	if (drag.offsetLeft + drag.clientWidth > container.clientWidth)
+		drag.style.left = container.clientWidth - drag.clientWidth + "px";
 }
 
 

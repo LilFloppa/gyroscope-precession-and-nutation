@@ -151,12 +151,32 @@
 	user-select: none
 
 .popup__content
-	height: 650px
-	width: 650px
+	max-height: 750px
+	max-width: 750px
 	border-radius: 0
 	border: 0
 	background-color: #fff
+	overflow: auto
+	&::-webkit-scrollbar
+		width: 8px
+		border-radius: 8px
+		background-color: transparent
+	&::-webkit-scrollbar-thumb 
+		background: #787b80
+		border-radius: 8px
 
+.popup__text
+	padding: 4px 10px
+	font-size: 17px
+	text-align: justify
+
+.equation
+	display: flex
+	justify-content: space-between
+	align-items: center
+	margin: 20px 0
+	font-family: MJXc-TeX-math-I,MJXc-TeX-math-Ix,MJXc-TeX-math-Iw
+	font-size: 129%
 
 
 

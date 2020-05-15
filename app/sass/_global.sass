@@ -34,6 +34,22 @@ img
 	max-width: 100%
 	height: auto
 
+p
+	margin: 0 0 10px
+	text-indent: 30px
+	font-size: 19px
+	&.no-indent
+		text-indent: 0
+	&:last-child
+		margin: 0
+
+#MathJax_Message
+	display: none
+
+span.mjx-chtml.MJXc-display
+	margin: 0
+	display: inline
+
 .container
 	max-width: 1920px
 	margin: 0 auto
@@ -63,6 +79,18 @@ img
 		&::-webkit-slider-thumb
 			background-color: #a6a6a6
 			border: 1px solid #666
+
+.caption
+	margin-bottom: 20px
+	font-size: 19px
+	text-align: center
+
+.thin-space
+	margin: 0 1px
+
+.inline-link
+	display: inline
+	color: $accent
 
 .button
 	text-decoration: none

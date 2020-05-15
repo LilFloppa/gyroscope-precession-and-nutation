@@ -38,6 +38,14 @@ gulp.task('scripts', function() {
 	return gulp.src([
 		'app/libs/jquery/dist/jquery.min.js',
 		'app/libs/jsxgraph/distrib/jsxgraphcore.js',
+		'app/libs/MathJax/MathJax.js',
+		'app/libs/MathJax/config/TeX-MML-AM_CHTML-full.js',
+		'app/libs/MathJax/jax/output/CommonHTML/fonts/TeX/fontdata.js',
+		'app/libs/MathJax/jax/output/CommonHTML/fonts/TeX/AMS-Regular.js',
+		'app/libs/MathJax/jax/element/mml/optable/BasicLatin.js',
+		'app/libs/MathJax/jax/element/mml/optable/GeneralPunctuation.js',
+		'app/libs/MathJax/jax/element/mml/optable/GreekAndCoptic.js',
+		'app/libs/MathJax/jax/element/mml/optable/Latin1Supplement.js',
 		'app/js/common.js',                             /* Always at the end */
 	])
 	.pipe(concat('scripts.min.js'))
@@ -68,12 +76,24 @@ gulp.task('build', gulp.series('removedist', 'styles', 'scripts', function(Conti
 		'app/.htaccess',
 		]).pipe(gulp.dest('dist'));
 
+	let buildAssets = gulp.src([
+		'app/assets/*.*',
+		]).pipe(gulp.dest('dist/assets'));
+
+	let buildModels = gulp.src([
+		'app/models/*.obj',
+		]).pipe(gulp.dest('dist/models'));
+
 	let buildCss = gulp.src([
 		'app/css/main.min.css',
 		]).pipe(gulp.dest('dist/css'));
 
+	let buildSass = gulp.src([
+		'app/sass/*.sass',
+		]).pipe(gulp.dest('dist/sass'));
+
 	let buildJs = gulp.src([
-		'app/js/scripts.min.js',
+		'app/js/*.*',
 		]).pipe(gulp.dest('dist/js'));
 
 	let buildImg = gulp.src([
