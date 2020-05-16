@@ -208,7 +208,115 @@
 				<img src="img/close.svg" alt="Close">
 			</button>
 
-			<div class="popup__content"></div>
+			<div class="popup__content popup__text">
+				<p>
+					The virtual laboratory was developed to simulate gyroscope nutation and precession. 
+					The program's interactive abilities allow doing a large number of virtual experiments to study the gyroscope behavior. 
+					Dynamic visualization of the gyroscope movement, supplemented by graphs, allows you to analyze the processes in detail.
+					You can observe and investigate various gyroscope motions as unidirectional precession, looping precession and cuspidal motion. 
+					An image of the trajectory of the gyroscope axis end accompanies real-time visualization of the gyroscope motion. 
+					All physical processes are modeled without friction at the point of fixing the axis and air resistance.
+				</p>
+
+				<div class="title">Camera control</div>
+
+				<p class="no-indent">
+					<span class="list-item">Use</span> 
+					the left mouse button to rotate the camera. <br>
+
+					<span class="list-item">Use</span> 
+					the mouse wheel to zoom in and out of the camera.
+				</p>
+
+				<div class="title">Menu</div>
+
+				<p class="no-indent">
+					<span class="list-item">The</span> 
+					menu item «Graphs» includes graphs of the angle $$\theta$$ as a function of $$\varphi$$ and as a function of time, 
+					as well as graphs of the kinetic, potential, and total energies of the gyroscope as functions of time. <br>
+
+					<span class="list-item">The</span> 
+					menu item «About» contains the user’s manual, theoretical information and information about the developers of the software product.
+				</p>
+
+				<div class="title">Interface</div>
+
+				<p class="no-indent">
+					<span class="list-item">The</span> 
+					program interface is located on the right side of the window, which is used for the main interaction with the installation. <br>
+
+					<span class="list-item">The</span> 
+					«Start» and «Pause» buttons start and stop the process of dynamic visuali-zation in real time.<br>
+
+					<span class="list-item">You</span> 
+					can completely stop the experiment by clicking the "Reset" button. The installation and all its parameters will return to the initial state.
+				</p>
+
+				<div class="title">Sliders</div>
+
+				<p class="no-indent">
+					Under the «Start», «Pause» and «Reset» buttons there are six sliders: <br>
+
+					<span class="list-item">The</span> 
+					first slider is responsible for changing the distance from the vertical axis to the disk. 
+					The interval of change is from 0.15 to 0.2 m. The step of change is 0.01 m.<br>
+
+					<span class="list-item">The</span> 
+					second slider is responsible for changing the mass of the disk. 
+					The interval of change is from 0.1 to 2 kg. The step of change is 0.1 kg. <br>
+
+					<span class="list-item">The</span> 
+					third slider is responsible for changing the radius of the disk. 
+					The interval of change is from 0.05 to 0.08 m. The step of change is 0.01 m. <br>
+
+					<span class="list-item">The</span> 
+					fourth slider is responsible for changing the rotation speed of the disk. 
+					The interval of change is from 500 to 1000 rad/s. The step of change is 1 rad/s. <br>
+
+					<span class="list-item">The</span> 
+					fifth slider is responsible for changing the initial precession speed. 
+					The interval of change is from -3 to 3 rad/s. The step of change is 0.1 rad/s. <br>
+
+					<span class="list-item">The</span> 
+					sixth slider is responsible for changing the inclination angle in relation to the vertical axis. 
+					The interval of change is from 45 to 90 degrees. The step of change is 1 degree.
+				</p>
+				
+				<div class="title">Timer</div>
+
+				<p class="no-indent">
+					<span class="list-item">The</span> 
+					presence of a virtual timer makes it possible to determine the current time of the experiment. 
+					Time is displayed in minutes, seconds, and milliseconds. <br>
+
+					<span class="list-item">You</span> 
+					can pause the time measurement by clicking the «Pause» button located next to the «Start» button. 
+					To continue measuring, just click the «Start» button again. <br>
+
+					<span class="list-item">You</span> 
+					can stop the time measurement completely by clicking the «Reset» button located next to the «Pause» button. 
+					When you click the button, the time is reset to zero.
+				</p>
+
+				<div class="title">Minimum system requirements</div>
+
+				<p class="no-indent">
+					<span class="list-item">OS:</span> 
+					Windows 7 <br>
+
+					<span class="list-item">CPU:</span> 
+					Intel Core i5-2500 3.3 GHz Processor <br>
+
+					<span class="list-item">RAM:</span> 
+					150MB <br>
+
+					<span class="list-item">HARD DRIVE:</span> 
+					Minimum 60MB of free space <br>
+
+					<span class="list-item">VIDEO CARD:</span> 
+					256 Mb NVIDIA GeForce 8300 GS
+				</p>
+			</div>
 		</div>
 		<!-- User's manual end -->
 
@@ -275,10 +383,10 @@
 
 				<p class="no-indent">
 					where: <br>
-					$$I_{0}$$ – the moment of inertia of the gyroscope about the $$x_{1}$$- and $$y_{1}$$-axes, perpendicular to the $$z_{1}$$-axis,<br>
-					$$I_{\psi}$$ – the moment of inertia about the $$z_{1}$$-axis, <br>
-					$$m$$ – the disk mass, <br>
-					$$l$$ – the distance from the origin of coordinates to the disk.
+					$$I_{0}$$ is the moment of inertia of the gyroscope about the $$x_{1}$$- and $$y_{1}$$-axes, perpendicular to the $$z_{1}$$-axis,<br>
+					$$I_{\psi}$$ is the moment of inertia about the $$z_{1}$$-axis, <br>
+					$$m$$ is the disk mass, <br>
+					$$l$$ is the distance from the origin of coordinates to the disk.
 				</p>
 
 				<p>
@@ -299,7 +407,7 @@
 					<span></span>
 
 					<span>
-						$$L_{\varphi}=\frac{\partial L}{\partial \dot{\varphi}}=\left (I_{0} sin^{2}\theta + I_{\psi} cos^{2}\theta \right ) \dot{\varphi} + I_{\psi} \dot{\psi} cos\theta = const,$$
+						$$L_{\varphi}=\frac{\partial L}{\partial \dot{\varphi}}=\left (I_{0} sin^{2}\theta + I_{\psi} cos^{2}\theta \right )\! \dot{\varphi} + I_{\psi} \dot{\psi} cos\theta = const,$$
 					</span>
 
 					<span>$$(3)$$</span>

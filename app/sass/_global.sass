@@ -85,12 +85,34 @@ span.mjx-chtml.MJXc-display
 	font-size: 19px
 	text-align: center
 
+.title
+	font-size: 23px
+	text-align: center
+	margin: 20px 0
+	font-weight: 700
+
 .thin-space
 	margin: 0 1px
 
 .inline-link
 	display: inline
 	color: $accent
+
+.list-item
+	padding-left: 30px
+	position: relative
+	&::before
+		content: ''
+		background-image: url(../img/arrow-right.svg)
+		background-repeat: no-repeat
+		background-position: left center
+		background-size: 14px
+		position: absolute
+		top: 50%
+		left: 0
+		transform: translateY(-50%)
+		width: 14px
+		height: 14px
 
 .button
 	text-decoration: none
