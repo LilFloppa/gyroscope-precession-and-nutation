@@ -276,6 +276,10 @@ let brdThetaFromPhi = JXG.JSXGraph.initBoard('ThetaFromPhi', {
 	grid: true,
 	keepAspectRatio: true,
 	showCopyright: false,
+	pan: {
+		enabled: true,
+		needShift: false,
+	}
 });
 brdThetaFromPhi.suspendUpdate();
 let ThetaFromPhiPlot = brdThetaFromPhi.create('functiongraph', [function(x) { return 0.5 * Math.cos(5 * x); }], { strokeWidth: 3, strokeColor: '#1e28ff' });
