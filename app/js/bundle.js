@@ -101,13 +101,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var shader_1 = __webpack_require__(4);
 var camera_1 = __webpack_require__(5);
 var directionalLight_1 = __webpack_require__(6);
+var trajectory_1 = __webpack_require__(7);
 var model = __importStar(__webpack_require__(2));
-var gyroscope_1 = __webpack_require__(10);
+var gyroscope_1 = __webpack_require__(11);
 var glm = __importStar(__webpack_require__(1));
 var objmodels = __importStar(__webpack_require__(3));
-var shadersources = __importStar(__webpack_require__(11));
+var shadersources = __importStar(__webpack_require__(12));
 var glCanvas;
 var shader;
+var trajectoryShader;
 var camera;
 var Models;
 var Lights;
@@ -147,6 +149,8 @@ function glCanvasOnResize() {
     exports.gl.viewport(0, 0, width, height);
 }
 var gyroscope;
+var trajectory;
+var running = false;
 function startup() {
     // Init canvas
     glCanvas = document.getElementById("canvas");
@@ -161,16 +165,22 @@ function startup() {
     exports.gl.canvas.width = width;
     exports.gl.canvas.height = height;
     exports.gl.viewport(0, 0, width, height);
-    // Init shader
+    // Init scene shader
     shader = new shader_1.Shader(shadersources.vertBase, shadersources.FragBase);
+    // Init trajectory shader
+    trajectoryShader = new shader_1.Shader(shadersources.vertTrajectory, shadersources.FragTrajectory);
     // Init camera
     camera = new camera_1.Camera();
     // Load models
     var floor = new model.Model();
     model.LoadModel(objmodels.floor, "assets/floorMat.jpg", floor);
-    gyroscope = new gyroscope_1.Gyroscope();
     var table = new model.Model();
     model.LoadModel(objmodels.table, "assets/tableMat.jpg", table);
+    // Init gyroscope
+    gyroscope = new gyroscope_1.Gyroscope(parseFloat(document.getElementById("distance").value), parseFloat(document.getElementById("mass").value), parseFloat(document.getElementById("radius").value), parseFloat(document.getElementById("rotation-speed").value), parseFloat(document.getElementById("initial-speed").value), glm.glMatrix.toRadian(parseFloat(document.getElementById("initial-angle").value)));
+    // Init trajectory
+    trajectory = new trajectory_1.Trajectory(2000);
+    // Push models to model-container
     Models = [];
     Models.push(gyroscope.axis);
     Models.push(gyroscope.disk);
@@ -201,11 +211,52 @@ function startup() {
     proj = glm.mat4.identity(proj);
     glm.mat4.perspective(proj, glm.glMatrix.toRadian(45.0), width / height, 0.1, 1000);
     shader.setMat4("proj", proj);
+    trajectoryShader.use();
+    trajectoryShader.setMat4("t_proj", proj);
+    // Init Buttons
+    document.getElementById("start").addEventListener("click", function (ev) {
+        running = true;
+    });
+    document.getElementById("pause").addEventListener("click", function (ev) {
+        running = false;
+    });
+    document.getElementById("reset").addEventListener("click", function (ev) {
+        running = false;
+        gyroscope.Reset();
+        trajectory.Clear();
+    });
+    // Init sliders
+    document.getElementById("distance").addEventListener("input", function () {
+        gyroscope.length = parseFloat(this.value);
+        gyroscope.SetTransform();
+    });
+    document.getElementById("mass").addEventListener("input", function () {
+        gyroscope.mass = parseFloat(this.value);
+        gyroscope.SetTransform();
+    });
+    document.getElementById("radius").addEventListener("input", function () {
+        gyroscope.radius = parseFloat(this.value);
+        gyroscope.SetTransform();
+    });
+    document.getElementById("rotation-speed").addEventListener("input", function () {
+        gyroscope.psi_dot = parseFloat(this.value);
+        gyroscope.SetTransform();
+    });
+    document.getElementById("initial-speed").addEventListener("input", function () {
+        gyroscope.phi_dot = parseFloat(this.value);
+        gyroscope.SetTransform();
+    });
+    document.getElementById("initial-angle").addEventListener("input", function () {
+        gyroscope.theta = glm.glMatrix.toRadian(parseFloat(this.value));
+        gyroscope.SetTransform();
+        trajectory.Clear();
+    });
 }
 var currentTime = 0;
 var lastTime = 0;
 var firstTime = true;
 function draw() {
+    // Calculate dt
     if (firstTime) {
         currentTime = new Date().getTime();
         lastTime = currentTime;
@@ -213,9 +264,11 @@ function draw() {
     }
     currentTime = new Date().getTime();
     var dt = (currentTime - lastTime) / 1000;
+    // Clear scene
     exports.gl.clearColor(0.82, 0.88, 0.94, 1.0);
     exports.gl.enable(exports.gl.DEPTH_TEST);
     exports.gl.clear(exports.gl.COLOR_BUFFER_BIT | exports.gl.DEPTH_BUFFER_BIT);
+    // Process mouse input for camera
     if (mouseDown)
         camera.ProcessMouseMovement(currentX - lastX, currentY - lastY);
     lastX = currentX;
@@ -223,11 +276,17 @@ function draw() {
     camera.ProcessMouseWheel(wheelOffset);
     wheelOffset = 0;
     var view = camera.GetLookAt();
-    for (var i = 0; i * 0.0001 < dt / 3; i++)
-        gyroscope.Update(0.0001);
+    // Update gyroscope
+    if (running) {
+        for (var i = 0; i * 0.0001 < dt / 3; i++)
+            gyroscope.Update(0.0001);
+        trajectory.AddPoint(gyroscope.phi, gyroscope.theta);
+    }
+    // Set scene shader
     shader.use();
     shader.setMat4("view", view);
     shader.setVec3("viewPos", camera.position);
+    // Draw models
     for (var _i = 0, Models_1 = Models; _i < Models_1.length; _i++) {
         var model_1 = Models_1[_i];
         model_1.array.use();
@@ -235,6 +294,12 @@ function draw() {
         shader.setMat4("model", model_1.modelMat);
         exports.gl.drawArrays(exports.gl.TRIANGLES, 0, model_1.array.size);
     }
+    // Draw trajectory
+    trajectoryShader.use();
+    trajectoryShader.setMat4("t_view", view);
+    exports.gl.lineWidth(4.0);
+    trajectory.Draw();
+    // Next frame
     lastTime = currentTime;
     window.requestAnimationFrame(draw);
 }
@@ -7873,10 +7938,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var vertexArray_1 = __webpack_require__(7);
-var texture_1 = __webpack_require__(8);
+var vertexArray_1 = __webpack_require__(8);
+var texture_1 = __webpack_require__(9);
 var glm = __importStar(__webpack_require__(1));
-var obj = __importStar(__webpack_require__(9));
+var obj = __importStar(__webpack_require__(10));
 var Model = /** @class */ (function () {
     function Model() {
     }
@@ -8019,7 +8084,7 @@ var glm = __importStar(__webpack_require__(1));
 var Camera = /** @class */ (function () {
     function Camera(center, radius, phi, psi) {
         if (center === void 0) { center = [0.0, 0.0, 0.0]; }
-        if (radius === void 0) { radius = 5; }
+        if (radius === void 0) { radius = 10.6; }
         if (phi === void 0) { phi = Math.PI; }
         if (psi === void 0) { psi = 0; }
         this.sensitivity = 0.01;
@@ -8032,8 +8097,8 @@ var Camera = /** @class */ (function () {
     Camera.prototype.ProcessMouseMovement = function (xoffset, yoffset) {
         this.phi += xoffset * this.sensitivity;
         this.psi += yoffset * this.sensitivity;
-        if (this.psi < glm.glMatrix.toRadian(-60.0))
-            this.psi = glm.glMatrix.toRadian(-60.0);
+        if (this.psi < glm.glMatrix.toRadian(-50.0))
+            this.psi = glm.glMatrix.toRadian(-50.0);
         if (this.psi > glm.glMatrix.toRadian(60.0))
             this.psi = glm.glMatrix.toRadian(60.0);
         this.UpdatePosition();
@@ -8045,8 +8110,10 @@ var Camera = /** @class */ (function () {
         else if (offset > 0) {
             this.radius += 50 * this.sensitivity;
         }
-        // if (this.radius > 13.0) this.radius = 13.0;
-        //  if (this.radius < 5.0) this.radius = 5.0;
+        if (this.radius > 11.7)
+            this.radius = 11.7;
+        if (this.radius < 3.5)
+            this.radius = 3.5;
         this.UpdatePosition();
     };
     Camera.prototype.UpdatePosition = function () {
@@ -8094,6 +8161,60 @@ exports.DirectionalLight = DirectionalLight;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var index_1 = __webpack_require__(0);
+var pi = 3.1415926535897932;
+var Point = /** @class */ (function () {
+    function Point(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+    return Point;
+}());
+var Trajectory = /** @class */ (function () {
+    function Trajectory(length) {
+        this.Points = [];
+        this.VAO = null;
+        this.VBO = null;
+        this.raw = [];
+        this.length = length;
+        this.VAO = index_1.gl.createVertexArray();
+        index_1.gl.bindVertexArray(this.VAO);
+        this.VBO = index_1.gl.createBuffer();
+        index_1.gl.bindBuffer(index_1.gl.ARRAY_BUFFER, this.VBO);
+        index_1.gl.enableVertexAttribArray(0);
+        index_1.gl.vertexAttribPointer(0, 3, index_1.gl.FLOAT, false, 0, 0);
+        index_1.gl.bindVertexArray(null);
+    }
+    Trajectory.prototype.AddPoint = function (phi, theta) {
+        var radius = 0.56 + 10 * 0.25;
+        this.raw.push(Math.cos(pi / 2 - theta) * Math.sin(phi) * radius, Math.sin(pi / 2 - theta) * radius, Math.cos(pi / 2 - theta) * Math.cos(phi) * radius);
+        if (this.raw.length / 3 > this.length) {
+            this.raw.shift();
+            this.raw.shift();
+            this.raw.shift();
+        }
+    };
+    Trajectory.prototype.Draw = function () {
+        index_1.gl.bindVertexArray(this.VAO);
+        index_1.gl.bufferData(index_1.gl.ARRAY_BUFFER, new Float32Array(this.raw), index_1.gl.STREAM_DRAW);
+        index_1.gl.drawArrays(index_1.gl.LINE_STRIP, 0, this.raw.length / 3);
+    };
+    Trajectory.prototype.Clear = function () {
+        this.raw = [];
+    };
+    return Trajectory;
+}());
+exports.Trajectory = Trajectory;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var index_1 = __webpack_require__(0);
 var VertexArray = /** @class */ (function () {
     function VertexArray(vertices) {
         this.VAO = null;
@@ -8122,7 +8243,7 @@ exports.VertexArray = VertexArray;
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8154,7 +8275,7 @@ exports.Texture = Texture;
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8350,7 +8471,7 @@ exports.default = OBJFile;
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8369,15 +8490,9 @@ var objmodels = __importStar(__webpack_require__(3));
 var g = 9.80665;
 var pi = 3.1415926535897932;
 var Gyroscope = /** @class */ (function () {
-    function Gyroscope() {
-        this.mass = 0.1;
-        this.radius = 0.08;
-        this.length = 0.2;
+    function Gyroscope(length, mass, radius, psi_dot, phi_dot, theta) {
         this.psi = 0;
-        this.psi_dot = 500;
         this.phi = 0;
-        this.phi_dot = 0;
-        this.theta = 1.5707963267948966;
         this.theta_dot = 0;
         this.time = 0;
         this.diskPos = [];
@@ -8389,9 +8504,15 @@ var Gyroscope = /** @class */ (function () {
         model.LoadModel(objmodels.box, "assets/boxMat.png", this.box);
         model.LoadModel(objmodels.disk, "assets/DiskMat.png", this.disk);
         model.LoadModel(objmodels.stand, "assets/standMat.png", this.stand);
+        this.length = length;
+        this.mass = mass;
+        this.radius = radius;
+        this.psi_dot = psi_dot;
+        this.phi_dot = phi_dot;
+        this.theta = theta;
         this.CalculateConstants();
         this.CalculateDiskPos();
-        this.disk.Update(this.diskPos, 0, 0, 0);
+        this.disk.Update(this.diskPos, this.radius / 0.08, 0, 0, 0);
     }
     Gyroscope.prototype.Update = function (dt) {
         this.time += dt;
@@ -8401,7 +8522,30 @@ var Gyroscope = /** @class */ (function () {
         this.CalculateDiskPos();
         this.box.Update(this.phi - prevPhi);
         this.axis.Update(this.phi - prevPhi, this.theta - pi / 2);
-        this.disk.Update(this.diskPos, this.psi - prevPsi, this.phi - prevPhi, this.theta - pi / 2);
+        this.disk.Update(this.diskPos, this.radius / 0.08, this.psi - prevPsi, this.phi - prevPhi, this.theta - pi / 2);
+    };
+    Gyroscope.prototype.Reset = function () {
+        this.mass = 0.1;
+        this.radius = 0.08;
+        this.length = 0.2;
+        this.psi = 0;
+        this.psi_dot = 500;
+        this.phi = 0;
+        this.phi_dot = 0;
+        this.theta = pi / 2;
+        this.theta_dot = 0;
+        this.time = 0;
+        this.CalculateConstants();
+        this.CalculateDiskPos();
+        this.box.Reset();
+        this.axis.Reset();
+        this.disk.Reset(this.diskPos, this.radius / 0.08);
+    };
+    Gyroscope.prototype.SetTransform = function () {
+        this.CalculateConstants();
+        this.CalculateDiskPos();
+        this.disk.Update(this.diskPos, this.radius / 0.08, 0, 0, this.theta - pi / 2);
+        this.axis.Update(0, this.theta - pi / 2);
     };
     Gyroscope.prototype.CalculateValues = function (dt) {
         var K1 = [];
@@ -8485,6 +8629,9 @@ var Box = /** @class */ (function () {
     Box.prototype.Update = function (dPhi) {
         glm.mat4.rotateY(this.modelMat, this.modelMat, dPhi);
     };
+    Box.prototype.Reset = function () {
+        glm.mat4.identity(this.modelMat);
+    };
     return Box;
 }());
 var Axis = /** @class */ (function () {
@@ -8507,6 +8654,13 @@ var Axis = /** @class */ (function () {
         glm.mat4.identity(this.modelMat);
         glm.mat4.mul(this.modelMat, this.translation, this.rotation);
     };
+    Axis.prototype.Reset = function () {
+        glm.mat4.identity(this.nutation);
+        glm.mat4.identity(this.precession);
+        glm.mat4.identity(this.rotation);
+        glm.mat4.identity(this.translation);
+        glm.mat4.identity(this.modelMat);
+    };
     return Axis;
 }());
 var Disk = /** @class */ (function () {
@@ -8522,7 +8676,7 @@ var Disk = /** @class */ (function () {
         glm.mat4.identity(this.rotation);
         glm.mat4.identity(this.translation);
     }
-    Disk.prototype.Update = function (diskPos, dPsi, dPhi, dTheta) {
+    Disk.prototype.Update = function (diskPos, radius, dPsi, dPhi, dTheta) {
         glm.mat4.identity(this.translation);
         glm.mat4.translate(this.translation, this.translation, new Float32Array(diskPos));
         glm.mat4.identity(this.nutation);
@@ -8533,13 +8687,25 @@ var Disk = /** @class */ (function () {
         glm.mat4.mul(this.rotation, this.precession, this.rotation);
         glm.mat4.identity(this.modelMat);
         glm.mat4.mul(this.modelMat, this.translation, this.rotation);
+        glm.mat4.scale(this.modelMat, this.modelMat, [radius, radius, 1.0]);
+    };
+    Disk.prototype.Reset = function (diskPos, radius) {
+        glm.mat4.identity(this.nutation);
+        glm.mat4.identity(this.precession);
+        glm.mat4.identity(this.diskRotation);
+        glm.mat4.identity(this.rotation);
+        glm.mat4.identity(this.translation);
+        glm.mat4.identity(this.modelMat);
+        glm.mat4.translate(this.translation, this.translation, new Float32Array(diskPos));
+        glm.mat4.mul(this.modelMat, this.translation, this.modelMat);
+        glm.mat4.scale(this.modelMat, this.modelMat, [radius, radius, 1.0]);
     };
     return Disk;
 }());
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8547,6 +8713,8 @@ var Disk = /** @class */ (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.vertBase = "#version 300 es\n    layout(location = 0) in vec3 pos;\n    layout(location = 1) in vec3 normal;\n    layout(location = 2) in vec2 uv;\n\n    uniform mat4 model;\n    uniform mat4 view;\n    uniform mat4 proj;\n\n    out vec3 v_pos;\n    out vec3 v_normal;\n    out vec2 v_uv;\n\n    void main() {\n      gl_Position = proj * view * model * vec4(pos, 1.0);\n      v_pos = vec3(model * vec4(pos, 1.0));\n      v_normal =  mat3(transpose(inverse(model))) * normal;\n      v_uv = vec2(uv.x, -uv.y);\n    }";
 exports.FragBase = "#version 300 es\n    #ifdef GL_ES\n        precision highp float;\n    #endif\n\n    in vec3 v_pos;\n    in vec3 v_normal;\n    in vec2 v_uv;\n\n    out vec4 color;\n\n    const float density = 0.07;\n    const float gradient = 7.0;\n\n\n    uniform vec3 viewPos;\n    uniform sampler2D diffuse_tex;\n\n    struct DirectionalLight \n    {\n        vec3 direction;\n\n        vec3 ambient;\n        vec3 diffuse;\n        vec3 specular;\n    };\n\n    uniform DirectionalLight lights[20];\n\n    vec3 CalcDirLight(DirectionalLight light, vec3 normal, vec3 viewDir)\n    {\n        vec3 lightDir = normalize(-light.direction);\n        // diffuse\n        float diff = max(dot(normal, lightDir), 0.0);\n\n        // specular\n        vec3 reflectDir = reflect(-lightDir, normal);\n        float max_spec = max(dot(viewDir, reflectDir), 0.0);\n\n        float spec = max_spec;\n        for (int i = 0; i < 32; i++)\n            spec *= max_spec;\n\n        // combine results\n        vec3 ambient  = light.ambient;\n        vec3 diffuse  = light.diffuse  * diff * vec3(texture(diffuse_tex, v_uv));\n        vec3 specular = light.specular * spec;\n        return (ambient + diffuse + specular);\n    } \n\n    void main() \n    {\n        vec3 norm = normalize(v_normal);\n        vec3 viewDir = normalize(viewPos - v_pos);\n\n        vec3 result = vec3(0.0, 0.0, 0.0);\n        for (int i = 0; i < 20; i++)\n            result += CalcDirLight(lights[i], norm, viewDir);\n\n        vec2 p = vec2(v_pos.x, v_pos.z);\n        float distance = length(p);\n        float visibility = exp(-pow((distance * density), gradient));\n        visibility = clamp(visibility, 0.0, 1.0);\n\n        color = mix(vec4(0.82, 0.88, 0.94, 1.0), vec4(result, 1.0), visibility);\n    }";
+exports.vertTrajectory = "#version 300 es\n    layout(location = 0) in vec3 pos;\n\n    uniform mat4 t_model;\n    uniform mat4 t_view;\n    uniform mat4 t_proj;\n\n    void main() {\n      gl_Position = t_proj * t_view * vec4(pos, 1.0);\n    }";
+exports.FragTrajectory = "#version 300 es\n    #ifdef GL_ES\n        precision highp float;\n    #endif\n\n    out vec4 color;\n\n\n    void main() \n    {\n        color = vec4(0.0, 0.0, 0.0, 1.0);\n    }";
 
 
 /***/ })

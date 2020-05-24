@@ -84,3 +84,27 @@ export const FragBase: string = `#version 300 es
 
         color = mix(vec4(0.82, 0.88, 0.94, 1.0), vec4(result, 1.0), visibility);
     }`;
+
+export const vertTrajectory: string = `#version 300 es
+    layout(location = 0) in vec3 pos;
+
+    uniform mat4 t_model;
+    uniform mat4 t_view;
+    uniform mat4 t_proj;
+
+    void main() {
+      gl_Position = t_proj * t_view * vec4(pos, 1.0);
+    }`;
+
+export const FragTrajectory: string = `#version 300 es
+    #ifdef GL_ES
+        precision highp float;
+    #endif
+
+    out vec4 color;
+
+
+    void main() 
+    {
+        color = vec4(0.0, 0.0, 0.0, 1.0);
+    }`;

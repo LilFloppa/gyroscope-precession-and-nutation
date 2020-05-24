@@ -1,474 +1,464 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-
-	<title>Precession and nutation of a gyroscope</title>
-
-	<link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png" />
-	<link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png" />
-	<link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png" />
-	<link rel="manifest" href="img/favicons/site.webmanifest" />
-	<link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#515151" />
-	<link rel="shortcut icon" href="img/favicons/favicon.ico" />
-
-	<meta name="msapplication-TileColor" content="#00aba9" />
-	<meta name="msapplication-config" content="img/favicons/browserconfig.xml" />
-	<meta name="theme-color" content="#ffffff" />
-
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:100,300,400,500,800&display=swap"/>
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=B612+Mono&display=swap">
-	<link rel="stylesheet" href="css/main.min.css"/>
-</head>
-
-<body>
-
-	<div class="container" id="container">
-		<!-- Menu begin -->
-		<header class="header">
-			<nav class="header-menu">
-				<ul class="header-menu__list">
-					<li>
-						<div>Graphs</div>
-						<ul class="submenu">
-							<li><div class="theta-from-phi">Graph of $$\theta \left ( \varphi  \right )$$</div></li>
-							<li><div class="theta-from-t">Graph of $$\theta \left ( t  \right )$$</div></li>
-							<li>
-								<div class="submenu__block">Energy graphs</div>
-								<ul class="submenu">
-									<li><div class="kinetic">Kinetic energy</div></li>
-									<li><div class="potential">Potential energy</div></li>
-									<li><div class="total">Total Energy</div></li>
-								</ul>
-							</li>
-						</ul>
-					</li>
-					<li>
-						<div>About</div>
-						<ul class="submenu">
-							<li><div class="manual">User's manual</div></li>
-							<li><div class="theory">Theory</div></li>
-							<li><div class="developers">Developers</div></li>
-						</ul>
-					</li>
-				</ul>
-			</nav>
-		</header>
-		<!-- Menu end -->
-
-		<div class="content">
-			<!-- Scene begin -->
-			<canvas id="canvas" class="content__scene"></canvas>
-			<!-- Scene end -->
-
-			<!-- Interface begin -->
-			<div class="content__interface interface">
-				<div class="interface__buttons">
-					<button class="button start-main">Start</button>
-					<button class="button pause-main disabled">Pause</button>
-					<button class="button reset-main disabled">Reset</button>
-				</div>
-
-				<div class="interface__parameters parameters">
-					<div class="parameters__wrapper">
-						<div class="parameters__text">Distance from the vertical axis to the disk: <span></span> m</div>
-						<div class="parameters__slider">
-							<input type="range" class="slider" id="distance" min="0.15" max="0.2" step="0.01" value="0.2"/>
-						</div>
-					</div>
-
-					<div class="parameters__wrapper">
-						<div class="parameters__text">Mass of the disk: <span></span> kg</div>
-						<div class="parameters__slider">
-							<input type="range" class="slider" id="mass" min="0.1" max="2" step="0.1" value="0.1"/>
-						</div>
-					</div>
-
-					<div class="parameters__wrapper">
-						<div class="parameters__text">Radius of the disk: <span></span> m</div>
-						<div class="parameters__slider">
-							<input type="range" class="slider" id="radius" min="0.05" max="0.08" step="0.01" value="0.08"/>
-						</div>
-					</div>
-
-					<div class="parameters__wrapper">
-						<div class="parameters__text">Rotation speed of the disk: <span></span> rad/s</div>
-						<div class="parameters__slider">
-							<input type="range" class="slider" id="rotation-speed" min="500" max="1000" step="1" value="500"/>
-						</div>
-					</div>
-
-					<div class="parameters__wrapper">
-						<div class="parameters__text">Initial precession speed: <span></span> rad/s</div>
-						<div class="parameters__slider">
-							<input type="range" class="slider" id="initial-speed" min="-3" max="3" step="0.1" value="0"/>
-						</div>
-					</div>
-
-					<div class="parameters__wrapper">
-						<div class="parameters__text">Inclination angle in relation to the vertical axis: <span></span>°</div>
-						<div class="parameters__slider">
-							<input type="range" class="slider" id="initial-angle" min="45" max="90" step="1" value="90"/>
-						</div>
-					</div>
-				</div>
-
-				<div class="interface__timer timer">
-					<div class="timer__text">
-						Time: <span class="timer__minutes">00</span>:<span class="timer__seconds">00</span>:<span class="timer__milliseconds">00</span>
-					</div>
-
-					<div class="timer__buttons">
-						<button class="button start-timer">Start</button>
-						<button class="button pause-timer disabled">Pause</button>
-						<button class="button reset-timer disabled">Reset</button>
-					</div>
-				</div>
-
-				<div class="interface__logo">
-					<img src="img/logo.png" alt="Logo" />
-				</div>
-			</div>
-			<!-- Interface end -->
-		</div>
-
-
-		<!-- Graph of θ(φ) begin -->
-		<div class="popup popup-theta-from-phi" id="dragThetaFromPhi">
-			<div id="handleThetaFromPhi" class="popup__handle">Graph of $$\theta \left ( \varphi  \right )$$</div>
-
-			<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-			</button>
-
-			<div id="ThetaFromPhi" class="jxgbox popup__content"></div>
-		</div>
-		<!-- Graph of θ(φ) end -->
-
-
-		<!-- Graph of θ(t) begin -->
-		<div class="popup popup-theta-from-t" id="dragThetaFromT">
-			<div id="handleThetaFromT" class="popup__handle">Graph of $$\theta \left ( t  \right )$$</div>
-
-			<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-			</button>
-
-			<div id="ThetaFromT" class="jxgbox popup__content"></div>
-		</div>
-		<!-- Graph of θ(t) end -->
-
-
-		<!-- Kinetic energy begin -->
-		<div class="popup popup-kinetic" id="dragKinetic">
-			<div id="handleKinetic" class="popup__handle">Kinetic energy</div>
-
-			<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-			</button>
-
-			<div id="kinetic" class="jxgbox popup__content"></div>
-		</div>
-		<!-- Kinetic energy end -->
-
-
-		<!-- Potential energy begin -->
-		<div class="popup popup-potential" id="dragPotential">
-			<div id="handlePotential" class="popup__handle">Potential energy</div>
-
-			<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-			</button>
-
-			<div id="potential" class="jxgbox popup__content"></div>
-		</div>
-		<!-- Potential energy end -->
-
-
-		<!-- Total energy begin -->
-		<div class="popup popup-total" id="dragTotal">
-			<div id="handleTotal" class="popup__handle">Total energy</div>
-
-			<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-			</button>
-
-			<div id="total" class="jxgbox popup__content"></div>
-		</div>
-		<!-- Total energy end -->
-
-
-		<!-- User's manual begin -->
-		<div class="popup popup-manual" id="dragManual">
-			<div id="handleManual" class="popup__handle">User's manual</div>
-
-			<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-			</button>
-
-			<div class="popup__content popup__text">
-				<p>
-					The virtual laboratory was developed to simulate gyroscope nutation and precession. 
-					The program's interactive abilities allow doing a large number of virtual experiments to study the gyroscope behavior. 
-					Dynamic visualization of the gyroscope movement, supplemented by graphs, allows you to analyze the processes in detail.
-					You can observe and investigate various gyroscope motions as unidirectional precession, looping precession and cuspidal motion. 
-					An image of the trajectory of the gyroscope axis end accompanies real-time visualization of the gyroscope motion. 
-					All physical processes are modeled without friction at the point of fixing the axis and air resistance.
-				</p>
-
-				<div class="title">Camera control</div>
-
-				<p class="no-indent">
-					<span class="list-item">Use</span> 
-					the left mouse button to rotate the camera. <br>
-
-					<span class="list-item">Use</span> 
-					the mouse wheel to zoom in and out of the camera.
-				</p>
-
-				<div class="title">Menu</div>
-
-				<p class="no-indent">
-					<span class="list-item">The</span> 
-					menu item «Graphs» includes graphs of the angle $$\theta$$ as a function of $$\varphi$$ and as a function of time, 
-					as well as graphs of the kinetic, potential, and total energies of the gyroscope as functions of time. <br>
-
-					<span class="list-item">The</span> 
-					menu item «About» contains the user’s manual, theoretical information and information about the developers of the software product.
-				</p>
-
-				<div class="title">Interface</div>
-
-				<p class="no-indent">
-					<span class="list-item">The</span> 
-					program interface is located on the right side of the window, which is used for the main interaction with the installation. <br>
-
-					<span class="list-item">The</span> 
-					«Start» and «Pause» buttons start and stop the process of dynamic visuali-zation in real time.<br>
-
-					<span class="list-item">You</span> 
-					can completely stop the experiment by clicking the "Reset" button. The installation and all its parameters will return to the initial state.
-				</p>
-
-				<div class="title">Sliders</div>
-
-				<p class="no-indent">
-					Under the «Start», «Pause» and «Reset» buttons there are six sliders: <br>
-
-					<span class="list-item">The</span> 
-					first slider is responsible for changing the distance from the vertical axis to the disk. 
-					The interval of change is from 0.15 to 0.2 m. The step of change is 0.01 m.<br>
-
-					<span class="list-item">The</span> 
-					second slider is responsible for changing the mass of the disk. 
-					The interval of change is from 0.1 to 2 kg. The step of change is 0.1 kg. <br>
-
-					<span class="list-item">The</span> 
-					third slider is responsible for changing the radius of the disk. 
-					The interval of change is from 0.05 to 0.08 m. The step of change is 0.01 m. <br>
-
-					<span class="list-item">The</span> 
-					fourth slider is responsible for changing the rotation speed of the disk. 
-					The interval of change is from 500 to 1000 rad/s. The step of change is 1 rad/s. <br>
-
-					<span class="list-item">The</span> 
-					fifth slider is responsible for changing the initial precession speed. 
-					The interval of change is from -3 to 3 rad/s. The step of change is 0.1 rad/s. <br>
-
-					<span class="list-item">The</span> 
-					sixth slider is responsible for changing the inclination angle in relation to the vertical axis. 
-					The interval of change is from 45 to 90 degrees. The step of change is 1 degree.
-				</p>
-				
-				<div class="title">Timer</div>
-
-				<p class="no-indent">
-					<span class="list-item">The</span> 
-					presence of a virtual timer makes it possible to determine the current time of the experiment. 
-					Time is displayed in minutes, seconds, and milliseconds. <br>
-
-					<span class="list-item">You</span> 
-					can pause the time measurement by clicking the «Pause» button located next to the «Start» button. 
-					To continue measuring, just click the «Start» button again. <br>
-
-					<span class="list-item">You</span> 
-					can stop the time measurement completely by clicking the «Reset» button located next to the «Pause» button. 
-					When you click the button, the time is reset to zero.
-				</p>
-			</div>
-		</div>
-		<!-- User's manual end -->
-
-
-		<!-- Theory begin -->
-		<div class="popup popup-theory" id="dragTheory">
-			<div id="handleTheory" class="popup__handle">Theory</div>
-
-			<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-			</button>
-
-			<div class="popup__content popup__text">
-				<p>
-					According to Merriam-Webster dictionary [1], gyroscope is a wheel or disks mounted to spin rapidly
-					about an axis and also free to rotate about one or both of two axes perpendicular to each other and to
-					the axis of spin. So a rotation of one of the two mutually perpendicular axes results from application of
-					torque to the other when the wheel is spinning and so that the entire apparatus offers considerable
-					opposition depending on the angular momentum to any torque that would change the direction of the
-					axis of spin [1].
-				</p>
-
-				<p>
-					If the axis of a spinning gyroscope is inclined to the vertical, its axis generates in space a circular
-					cone, so that the angle between the axis and the vertical remains constant during rotation. This kind of
-					motion of a gyroscope that is subjected to an external torque is called forced or torque-induced
-					precession. In the general case, i.e., for arbitrary initial conditions, the motion of a gyroscope is a
-					superposition of forced regular precession and nutation. Nutation of a fast-spinning gyroscope reveals
-					itself as (small) vibration and shivering of the precessing axis [2].
-				</p>
-
-				<p>
-					Figure 1 schematically shows a gyroscope, the mechanical motion of which is associated with
-					rotation around its own axis, precession and nutation.
-				</p>
-
-				<img src="img/gyroscope.jpg" alt="Gyroscope">
-				<div class="caption"><b>Figure 1.</b> Gyroscope.</div>
-
-				<p>
-					The Euler angles $$\psi$$, $$\varphi$$ and $$\theta$$ are used to describe the gyroscope motion. The angle $$\psi$$ 
-					describes the gyroscope rotation around its own axis, the angle $$\varphi$$ describes the gyroscope precession, and the
-					angle $$\theta$$ describes the gyroscope nutation.
-				</p>
-
-				<p>
-					The Lagrange method was used to construct a mathematical model of gyroscope motion. The
-					method allows obtaining differential equations of motion for the Euler angles. We used the
-					approximation of the weightless axis and the absence of friction. The Lagrange function is the
-					difference between the kinetic and potential energies of the gyroscope [3]:
-				</p>
-
-				<span class="equation">
-					<span></span>
-
-					<span>
-						$$L=\frac{I_{0}}{2} \left ( \dot{\theta}^{2} + \dot{\varphi}^{2} sin^{2}\theta  \right ) + 
-						\frac{I_{\psi}}{2} \left ( \dot{\psi} + \dot{\varphi} cos\theta \right )^{2} \! -
-						mg$$<span class="thin-space">$$l$$</span><span class="thin-space">$$cos\theta ,$$</span>
-					</span>
-
-					<span>$$(1)$$</span>
-				</span>
-
-				<p class="no-indent">
-					where: <br>
-					$$I_{0}$$ is the moment of inertia of the gyroscope about the $$x_{1}$$- and $$y_{1}$$-axes, perpendicular to the $$z_{1}$$-axis,<br>
-					$$I_{\psi}$$ is the moment of inertia about the $$z_{1}$$-axis, <br>
-					$$m$$ is the disk mass, <br>
-					$$l$$ is the distance from the origin of coordinates to the disk.
-				</p>
-
-				<p>
-					The moment vector of the force is directed perpendicular to the directions of gravity and the axes $$z$$ and $$z_{1}$$. Hence [11]:
-				</p>
-
-				<span class="equation">
-					<span></span>
-
-					<span>
-						$$L_{\psi}=\frac{\partial L}{\partial \dot{\psi}}=I_{\psi} \left ( \dot{\psi} + \dot{\varphi} cos\theta  \right )=const,$$
-					</span>
-
-					<span>$$(2)$$</span>
-				</span>
-
-				<span class="equation">
-					<span></span>
-
-					<span>
-						$$L_{\varphi}=\frac{\partial L}{\partial \dot{\varphi}}=\left (I_{0} sin^{2}\theta + I_{\psi} cos^{2}\theta \right )\! \dot{\varphi} + I_{\psi} \dot{\psi} cos\theta = const,$$
-					</span>
-
-					<span>$$(3)$$</span>
-				</span>
-
-				<p class="no-indent">
-					where: <br>
-					$$L_{\psi}$$ is the angular momentum of the disk along the $$z_{1}$$-axis, <br>
-					$$L_{\varphi}$$ is the angular momentum along the $$z$$-axis.
-				</p>
-
-				<p>
-					From equations $$(2)$$ and $$(3)$$ we obtain:
-				</p>
-
-				<span class="equation">
-					<span></span>
-
-					<span>
-						$$\dot{\varphi}=\frac{L_{\varphi}-L_{\psi} cos\theta}{I_{0} sin^{2}\theta},$$
-					</span>
-
-					<span>$$(4)$$</span>
-				</span>
-
-				<span class="equation">
-					<span></span>
-
-					<span>
-						$$\dot{\psi}=\frac{L_{\psi}}{I_{\psi}}-\frac{L_{\varphi}-L_{\psi} cos\theta}{I_{0} sin^{2}\theta} cos\theta.$$
-					</span>
-
-					<span>$$(5)$$</span>
-				</span>
-
-				<p>
-					From the Euler-Lagrange equation, we obtain the third equation of motion [4]:
-				</p>
-
-				<span class="equation">
-					<span></span>
-
-					<span>
-						$$I_{0} \ddot{\theta}=-\frac{\left ( L_{\varphi}-L_{\psi} cos\theta \right ) L_{\psi}}{I_{0} sin\theta} + \frac{cos\theta \left ( L_{\varphi}-L_{\psi} cos\theta \right )^{2}}{I_{0} sin^{3}\theta} + mg$$<span class="thin-space">$$l$$</span><span class="thin-space">$$sin\theta$$</span>
-					</span>
-
-					<span>$$(6)$$</span>
-				</span>
-
-				<p style="margin-bottom: 50px;">
-					Equations $$(4)\, -\,(6)$$ are differential equations of the gyroscope motion in the Euler angles representation.
-				</p>
-
-				<p class="no-indent">
-					[1] <a class="inline-link" href="https://www.merriam-webster.com/dictionary">https://www.merriam-webster.com/dictionary</a><br>
-					[2] Butikov E 2006 European Journal of Physics 27 1071 <br>
-					[3] Landau L.D. and Lifshitz E.M. 1976 Mechanics (New York: Pergamon Press) <br>
-					[4] Marion J.B. and Thornton S.T. 1995 Classical Dynamics of Particles and Systems (Saunders College Publishing)
-				</p>
-			</div> 
-		</div>
-		<!-- Theory end -->
-
-
-		<!-- Developers begin -->
-		<div class="popup popup-developers" id="dragDevelopers">
-			<div id="handleDevelopers" class="popup__handle">Developers</div>
-
-			<button class="popup__close">
-				<img src="img/close.svg" alt="Close">
-			</button>
-
-			<div class="popup__content">
-				<img src="img/developers.jpg" alt="Developers">
-			</div>
-		</div>
-		<!-- Developers end -->
-	</div>
-
-	<script src="js/scripts.min.js"></script>
-	<script src="js/bundle.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>Precession and nutation of a gyroscope</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png" />
+    <link rel="manifest" href="img/favicons/site.webmanifest" />
+    <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#515151" />
+    <link rel="shortcut icon" href="img/favicons/favicon.ico" />
+
+    <meta name="msapplication-TileColor" content="#00aba9" />
+    <meta name="msapplication-config" content="img/favicons/browserconfig.xml" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Sans:100,300,400,500,800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=B612+Mono&display=swap" />
+    <link rel="stylesheet" href="css/main.min.css" />
+  </head>
+
+  <body>
+    <div class="container" id="container">
+      <!-- Menu begin -->
+      <header class="header">
+        <nav class="header-menu">
+          <ul class="header-menu__list">
+            <li>
+              <div>Graphs</div>
+              <ul class="submenu">
+                <li><div class="theta-from-phi">Graph of $$\theta \left ( \varphi \right )$$</div></li>
+                <li><div class="theta-from-t">Graph of $$\theta \left ( t \right )$$</div></li>
+                <li>
+                  <div class="submenu__block">Energy graphs</div>
+                  <ul class="submenu">
+                    <li><div class="kinetic">Kinetic energy</div></li>
+                    <li><div class="potential">Potential energy</div></li>
+                    <li><div class="total">Total Energy</div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div>About</div>
+              <ul class="submenu">
+                <li><div class="manual">User's manual</div></li>
+                <li><div class="theory">Theory</div></li>
+                <li><div class="developers">Developers</div></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      <!-- Menu end -->
+
+      <div class="content">
+        <!-- Scene begin -->
+        <canvas id="canvas" class="content__scene"></canvas>
+        <!-- Scene end -->
+
+        <!-- Interface begin -->
+        <div class="content__interface interface">
+          <div class="interface__buttons">
+            <button id="start" class="button start-main">Start</button>
+            <button id="pause" class="button pause-main disabled">Pause</button>
+            <button id="reset" class="button reset-main disabled">Reset</button>
+          </div>
+
+          <div class="interface__parameters parameters">
+            <div class="parameters__wrapper">
+              <div class="parameters__text">Distance from the vertical axis to the disk: <span></span> m</div>
+              <div class="parameters__slider">
+                <input type="range" class="slider" id="distance" min="0.15" max="0.2" step="0.01" value="0.2" />
+              </div>
+            </div>
+
+            <div class="parameters__wrapper">
+              <div class="parameters__text">Mass of the disk: <span></span> kg</div>
+              <div class="parameters__slider">
+                <input type="range" class="slider" id="mass" min="0.1" max="2" step="0.1" value="0.1" />
+              </div>
+            </div>
+
+            <div class="parameters__wrapper">
+              <div class="parameters__text">Radius of the disk: <span></span> m</div>
+              <div class="parameters__slider">
+                <input type="range" class="slider" id="radius" min="0.05" max="0.08" step="0.01" value="0.08" />
+              </div>
+            </div>
+
+            <div class="parameters__wrapper">
+              <div class="parameters__text">Rotation speed of the disk: <span></span> rad/s</div>
+              <div class="parameters__slider">
+                <input type="range" class="slider" id="rotation-speed" min="500" max="1000" step="1" value="500" />
+              </div>
+            </div>
+
+            <div class="parameters__wrapper">
+              <div class="parameters__text">Initial precession speed: <span></span> rad/s</div>
+              <div class="parameters__slider">
+                <input type="range" class="slider" id="initial-speed" min="-3" max="3" step="0.1" value="0" />
+              </div>
+            </div>
+
+            <div class="parameters__wrapper">
+              <div class="parameters__text">Inclination angle in relation to the vertical axis: <span></span>°</div>
+              <div class="parameters__slider">
+                <input type="range" class="slider" id="initial-angle" min="45" max="90" step="1" value="90" />
+              </div>
+            </div>
+          </div>
+
+          <div class="interface__timer timer">
+            <div class="timer__text">
+              Time: <span class="timer__minutes">00</span>:<span class="timer__seconds">00</span>:<span class="timer__milliseconds">00</span>
+            </div>
+
+            <div class="timer__buttons">
+              <button class="button start-timer">Start</button>
+              <button class="button pause-timer disabled">Pause</button>
+              <button class="button reset-timer disabled">Reset</button>
+            </div>
+          </div>
+
+          <div class="interface__logo">
+            <img src="img/logo.png" alt="Logo" />
+          </div>
+        </div>
+        <!-- Interface end -->
+      </div>
+
+      <!-- Graph of θ(φ) begin -->
+      <div class="popup popup-theta-from-phi" id="dragThetaFromPhi">
+        <div id="handleThetaFromPhi" class="popup__handle">Graph of $$\theta \left ( \varphi \right )$$</div>
+
+        <button class="popup__close">
+          <img src="img/close.svg" alt="Close" />
+        </button>
+
+        <div id="ThetaFromPhi" class="jxgbox popup__content"></div>
+      </div>
+      <!-- Graph of θ(φ) end -->
+
+      <!-- Graph of θ(t) begin -->
+      <div class="popup popup-theta-from-t" id="dragThetaFromT">
+        <div id="handleThetaFromT" class="popup__handle">Graph of $$\theta \left ( t \right )$$</div>
+
+        <button class="popup__close">
+          <img src="img/close.svg" alt="Close" />
+        </button>
+
+        <div id="ThetaFromT" class="jxgbox popup__content"></div>
+      </div>
+      <!-- Graph of θ(t) end -->
+
+      <!-- Kinetic energy begin -->
+      <div class="popup popup-kinetic" id="dragKinetic">
+        <div id="handleKinetic" class="popup__handle">Kinetic energy</div>
+
+        <button class="popup__close">
+          <img src="img/close.svg" alt="Close" />
+        </button>
+
+        <div id="kinetic" class="jxgbox popup__content"></div>
+      </div>
+      <!-- Kinetic energy end -->
+
+      <!-- Potential energy begin -->
+      <div class="popup popup-potential" id="dragPotential">
+        <div id="handlePotential" class="popup__handle">Potential energy</div>
+
+        <button class="popup__close">
+          <img src="img/close.svg" alt="Close" />
+        </button>
+
+        <div id="potential" class="jxgbox popup__content"></div>
+      </div>
+      <!-- Potential energy end -->
+
+      <!-- Total energy begin -->
+      <div class="popup popup-total" id="dragTotal">
+        <div id="handleTotal" class="popup__handle">Total energy</div>
+
+        <button class="popup__close">
+          <img src="img/close.svg" alt="Close" />
+        </button>
+
+        <div id="total" class="jxgbox popup__content"></div>
+      </div>
+      <!-- Total energy end -->
+
+      <!-- User's manual begin -->
+      <div class="popup popup-manual" id="dragManual">
+        <div id="handleManual" class="popup__handle">User's manual</div>
+
+        <button class="popup__close">
+          <img src="img/close.svg" alt="Close" />
+        </button>
+
+        <div class="popup__content popup__text">
+          <p>
+            The virtual laboratory was developed to simulate gyroscope nutation and precession. The program's interactive abilities allow doing a
+            large number of virtual experiments to study the gyroscope behavior. Dynamic visualization of the gyroscope movement, supplemented by
+            graphs, allows you to analyze the processes in detail. You can observe and investigate various gyroscope motions as unidirectional
+            precession, looping precession and cuspidal motion. An image of the trajectory of the gyroscope axis end accompanies real-time
+            visualization of the gyroscope motion. All physical processes are modeled without friction at the point of fixing the axis and air
+            resistance.
+          </p>
+
+          <div class="title">Camera control</div>
+
+          <p class="no-indent">
+            <span class="list-item">Use</span>
+            the left mouse button to rotate the camera. <br />
+
+            <span class="list-item">Use</span>
+            the mouse wheel to zoom in and out of the camera.
+          </p>
+
+          <div class="title">Menu</div>
+
+          <p class="no-indent">
+            <span class="list-item">The</span>
+            menu item «Graphs» includes graphs of the angle $$\theta$$ as a function of $$\varphi$$ and as a function of time, as well as graphs of
+            the kinetic, potential, and total energies of the gyroscope as functions of time. <br />
+
+            <span class="list-item">The</span>
+            menu item «About» contains the user’s manual, theoretical information and information about the developers of the software product.
+          </p>
+
+          <div class="title">Interface</div>
+
+          <p class="no-indent">
+            <span class="list-item">The</span>
+            program interface is located on the right side of the window, which is used for the main interaction with the installation. <br />
+
+            <span class="list-item">The</span>
+            «Start» and «Pause» buttons start and stop the process of dynamic visuali-zation in real time.<br />
+
+            <span class="list-item">You</span>
+            can completely stop the experiment by clicking the "Reset" button. The installation and all its parameters will return to the initial
+            state.
+          </p>
+
+          <div class="title">Sliders</div>
+
+          <p class="no-indent">
+            Under the «Start», «Pause» and «Reset» buttons there are six sliders: <br />
+
+            <span class="list-item">The</span>
+            first slider is responsible for changing the distance from the vertical axis to the disk. The interval of change is from 0.15 to 0.2 m.
+            The step of change is 0.01 m.<br />
+
+            <span class="list-item">The</span>
+            second slider is responsible for changing the mass of the disk. The interval of change is from 0.1 to 2 kg. The step of change is 0.1 kg.
+            <br />
+
+            <span class="list-item">The</span>
+            third slider is responsible for changing the radius of the disk. The interval of change is from 0.05 to 0.08 m. The step of change is 0.01
+            m. <br />
+
+            <span class="list-item">The</span>
+            fourth slider is responsible for changing the rotation speed of the disk. The interval of change is from 500 to 1000 rad/s. The step of
+            change is 1 rad/s. <br />
+
+            <span class="list-item">The</span>
+            fifth slider is responsible for changing the initial precession speed. The interval of change is from -3 to 3 rad/s. The step of change is
+            0.1 rad/s. <br />
+
+            <span class="list-item">The</span>
+            sixth slider is responsible for changing the inclination angle in relation to the vertical axis. The interval of change is from 45 to 90
+            degrees. The step of change is 1 degree.
+          </p>
+
+          <div class="title">Timer</div>
+
+          <p class="no-indent">
+            <span class="list-item">The</span>
+            presence of a virtual timer makes it possible to determine the current time of the experiment. Time is displayed in minutes, seconds, and
+            milliseconds. <br />
+
+            <span class="list-item">You</span>
+            can pause the time measurement by clicking the «Pause» button located next to the «Start» button. To continue measuring, just click the
+            «Start» button again. <br />
+
+            <span class="list-item">You</span>
+            can stop the time measurement completely by clicking the «Reset» button located next to the «Pause» button. When you click the button, the
+            time is reset to zero.
+          </p>
+        </div>
+      </div>
+      <!-- User's manual end -->
+
+      <!-- Theory begin -->
+      <div class="popup popup-theory" id="dragTheory">
+        <div id="handleTheory" class="popup__handle">Theory</div>
+
+        <button class="popup__close">
+          <img src="img/close.svg" alt="Close" />
+        </button>
+
+        <div class="popup__content popup__text">
+          <p>
+            According to Merriam-Webster dictionary [1], gyroscope is a wheel or disks mounted to spin rapidly about an axis and also free to rotate
+            about one or both of two axes perpendicular to each other and to the axis of spin. So a rotation of one of the two mutually perpendicular
+            axes results from application of torque to the other when the wheel is spinning and so that the entire apparatus offers considerable
+            opposition depending on the angular momentum to any torque that would change the direction of the axis of spin [1].
+          </p>
+
+          <p>
+            If the axis of a spinning gyroscope is inclined to the vertical, its axis generates in space a circular cone, so that the angle between
+            the axis and the vertical remains constant during rotation. This kind of motion of a gyroscope that is subjected to an external torque is
+            called forced or torque-induced precession. In the general case, i.e., for arbitrary initial conditions, the motion of a gyroscope is a
+            superposition of forced regular precession and nutation. Nutation of a fast-spinning gyroscope reveals itself as (small) vibration and
+            shivering of the precessing axis [2].
+          </p>
+
+          <p>
+            Figure 1 schematically shows a gyroscope, the mechanical motion of which is associated with rotation around its own axis, precession and
+            nutation.
+          </p>
+
+          <img src="img/gyroscope.jpg" alt="Gyroscope" />
+          <div class="caption"><b>Figure 1.</b> Gyroscope.</div>
+
+          <p>
+            The Euler angles $$\psi$$, $$\varphi$$ and $$\theta$$ are used to describe the gyroscope motion. The angle $$\psi$$ describes the
+            gyroscope rotation around its own axis, the angle $$\varphi$$ describes the gyroscope precession, and the angle $$\theta$$ describes the
+            gyroscope nutation.
+          </p>
+
+          <p>
+            The Lagrange method was used to construct a mathematical model of gyroscope motion. The method allows obtaining differential equations of
+            motion for the Euler angles. We used the approximation of the weightless axis and the absence of friction. The Lagrange function is the
+            difference between the kinetic and potential energies of the gyroscope [3]:
+          </p>
+
+          <span class="equation">
+            <span></span>
+
+            <span>
+              $$L=\frac{I_{0}}{2} \left ( \dot{\theta}^{2} + \dot{\varphi}^{2} sin^{2}\theta \right ) + \frac{I_{\psi}}{2} \left ( \dot{\psi} +
+              \dot{\varphi} cos\theta \right )^{2} \! - mg$$<span class="thin-space">$$l$$</span><span class="thin-space">$$cos\theta ,$$</span>
+            </span>
+
+            <span>$$(1)$$</span>
+          </span>
+
+          <p class="no-indent">
+            where: <br />
+            $$I_{0}$$ is the moment of inertia of the gyroscope about the $$x_{1}$$- and $$y_{1}$$-axes, perpendicular to the $$z_{1}$$-axis,<br />
+            $$I_{\psi}$$ is the moment of inertia about the $$z_{1}$$-axis, <br />
+            $$m$$ is the disk mass, <br />
+            $$l$$ is the distance from the origin of coordinates to the disk.
+          </p>
+
+          <p>
+            The moment vector of the force is directed perpendicular to the directions of gravity and the axes $$z$$ and $$z_{1}$$. Hence [11]:
+          </p>
+
+          <span class="equation">
+            <span></span>
+
+            <span>
+              $$L_{\psi}=\frac{\partial L}{\partial \dot{\psi}}=I_{\psi} \left ( \dot{\psi} + \dot{\varphi} cos\theta \right )=const,$$
+            </span>
+
+            <span>$$(2)$$</span>
+          </span>
+
+          <span class="equation">
+            <span></span>
+
+            <span>
+              $$L_{\varphi}=\frac{\partial L}{\partial \dot{\varphi}}=\left (I_{0} sin^{2}\theta + I_{\psi} cos^{2}\theta \right )\! \dot{\varphi} +
+              I_{\psi} \dot{\psi} cos\theta = const,$$
+            </span>
+
+            <span>$$(3)$$</span>
+          </span>
+
+          <p class="no-indent">
+            where: <br />
+            $$L_{\psi}$$ is the angular momentum of the disk along the $$z_{1}$$-axis, <br />
+            $$L_{\varphi}$$ is the angular momentum along the $$z$$-axis.
+          </p>
+
+          <p>
+            From equations $$(2)$$ and $$(3)$$ we obtain:
+          </p>
+
+          <span class="equation">
+            <span></span>
+
+            <span>
+              $$\dot{\varphi}=\frac{L_{\varphi}-L_{\psi} cos\theta}{I_{0} sin^{2}\theta},$$
+            </span>
+
+            <span>$$(4)$$</span>
+          </span>
+
+          <span class="equation">
+            <span></span>
+
+            <span>
+              $$\dot{\psi}=\frac{L_{\psi}}{I_{\psi}}-\frac{L_{\varphi}-L_{\psi} cos\theta}{I_{0} sin^{2}\theta} cos\theta.$$
+            </span>
+
+            <span>$$(5)$$</span>
+          </span>
+
+          <p>
+            From the Euler-Lagrange equation, we obtain the third equation of motion [4]:
+          </p>
+
+          <span class="equation">
+            <span></span>
+
+            <span>
+              $$I_{0} \ddot{\theta}=-\frac{\left ( L_{\varphi}-L_{\psi} cos\theta \right ) L_{\psi}}{I_{0} sin\theta} + \frac{cos\theta \left (
+              L_{\varphi}-L_{\psi} cos\theta \right )^{2}}{I_{0} sin^{3}\theta} + mg$$<span class="thin-space">$$l$$</span
+              ><span class="thin-space">$$sin\theta$$</span>
+            </span>
+
+            <span>$$(6)$$</span>
+          </span>
+
+          <p style="margin-bottom: 50px;">
+            Equations $$(4)\, -\,(6)$$ are differential equations of the gyroscope motion in the Euler angles representation.
+          </p>
+
+          <p class="no-indent">
+            [1] <a class="inline-link" href="https://www.merriam-webster.com/dictionary">https://www.merriam-webster.com/dictionary</a><br />
+            [2] Butikov E 2006 European Journal of Physics 27 1071 <br />
+            [3] Landau L.D. and Lifshitz E.M. 1976 Mechanics (New York: Pergamon Press) <br />
+            [4] Marion J.B. and Thornton S.T. 1995 Classical Dynamics of Particles and Systems (Saunders College Publishing)
+          </p>
+        </div>
+      </div>
+      <!-- Theory end -->
+
+      <!-- Developers begin -->
+      <div class="popup popup-developers" id="dragDevelopers">
+        <div id="handleDevelopers" class="popup__handle">Developers</div>
+
+        <button class="popup__close">
+          <img src="img/close.svg" alt="Close" />
+        </button>
+
+        <div class="popup__content">
+          <img src="img/developers.jpg" alt="Developers" />
+        </div>
+      </div>
+      <!-- Developers end -->
+    </div>
+
+    <script src="js/scripts.min.js"></script>
+    <script src="js/bundle.js"></script>
+  </body>
 </html>

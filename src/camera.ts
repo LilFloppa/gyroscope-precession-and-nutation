@@ -11,7 +11,7 @@ export class Camera {
 
   private sensitivity: number = 0.01;
 
-  constructor(center: glm.vec3 = [0.0, 0.0, 0.0], radius: number = 5, phi: number = Math.PI, psi: number = 0) {
+  constructor(center: glm.vec3 = [0.0, 0.0, 0.0], radius: number = 10.6, phi: number = Math.PI, psi: number = 0) {
     this.center = center;
     this.radius = radius;
     this.phi = phi;
@@ -23,7 +23,7 @@ export class Camera {
   ProcessMouseMovement(xoffset: number, yoffset: number): void {
     this.phi += xoffset * this.sensitivity;
     this.psi += yoffset * this.sensitivity;
-    if (this.psi < glm.glMatrix.toRadian(-60.0)) this.psi = glm.glMatrix.toRadian(-60.0);
+    if (this.psi < glm.glMatrix.toRadian(-50.0)) this.psi = glm.glMatrix.toRadian(-50.0);
     if (this.psi > glm.glMatrix.toRadian(60.0)) this.psi = glm.glMatrix.toRadian(60.0);
 
     this.UpdatePosition();
@@ -36,9 +36,9 @@ export class Camera {
       this.radius += 50 * this.sensitivity;
     }
 
-    // if (this.radius > 13.0) this.radius = 13.0;
+    if (this.radius > 11.7) this.radius = 11.7;
 
-    //  if (this.radius < 5.0) this.radius = 5.0;
+    if (this.radius < 3.5) this.radius = 3.5;
 
     this.UpdatePosition();
   }

@@ -17,14 +17,14 @@ export class Gyroscope {
 
   I_psi: number;
   I0: number;
-  mass: number = 0.1;
-  radius: number = 0.08;
-  length: number = 0.2;
+  mass: number;
+  radius: number;
+  length: number;
   psi: number = 0;
-  psi_dot: number = 500;
+  psi_dot: number;
   phi: number = 0;
-  phi_dot: number = 0;
-  theta: number = 1.5707963267948966;
+  phi_dot: number;
+  theta: number;
   theta_dot: number = 0;
   L_psi: number;
   L_phi: number;
@@ -32,7 +32,7 @@ export class Gyroscope {
 
   diskPos: number[] = [];
 
-  constructor() {
+  constructor(length: number, mass: number, radius: number, psi_dot: number, phi_dot: number, theta: number) {
     this.disk = new Disk();
     this.axis = new Axis();
     this.box = new Box();
@@ -43,10 +43,17 @@ export class Gyroscope {
     model.LoadModel(objmodels.disk, "assets/DiskMat.png", this.disk);
     model.LoadModel(objmodels.stand, "assets/standMat.png", this.stand);
 
+    this.length = length;
+    this.mass = mass;
+    this.radius = radius;
+    this.psi_dot = psi_dot;
+    this.phi_dot = phi_dot;
+    this.theta = theta;
+
     this.CalculateConstants();
     this.CalculateDiskPos();
 
-    this.disk.Update(this.diskPos, 0, 0, 0);
+    this.disk.Update(this.diskPos, this.radius / 0.08, 0, 0, 0);
   }
 
   Update(dt: number): void {
@@ -59,7 +66,35 @@ export class Gyroscope {
     this.CalculateDiskPos();
     this.box.Update(this.phi - prevPhi);
     this.axis.Update(this.phi - prevPhi, this.theta - pi / 2);
-    this.disk.Update(this.diskPos, this.psi - prevPsi, this.phi - prevPhi, this.theta - pi / 2);
+    this.disk.Update(this.diskPos, this.radius / 0.08, this.psi - prevPsi, this.phi - prevPhi, this.theta - pi / 2);
+  }
+
+  Reset(): void {
+    this.mass = 0.1;
+    this.radius = 0.08;
+    this.length = 0.2;
+    this.psi = 0;
+    this.psi_dot = 500;
+    this.phi = 0;
+    this.phi_dot = 0;
+    this.theta = pi / 2;
+    this.theta_dot = 0;
+    this.time = 0;
+
+    this.CalculateConstants();
+    this.CalculateDiskPos();
+
+    this.box.Reset();
+    this.axis.Reset();
+    this.disk.Reset(this.diskPos, this.radius / 0.08);
+  }
+
+  SetTransform() {
+    this.CalculateConstants();
+    this.CalculateDiskPos();
+
+    this.disk.Update(this.diskPos, this.radius / 0.08, 0, 0, this.theta - pi / 2);
+    this.axis.Update(0, this.theta - pi / 2);
   }
 
   CalculateValues(dt: number) {
@@ -167,6 +202,10 @@ class Box implements model.IModel {
   Update(dPhi: number): void {
     glm.mat4.rotateY(this.modelMat, this.modelMat, dPhi);
   }
+
+  Reset(): void {
+    glm.mat4.identity(this.modelMat);
+  }
 }
 
 class Axis implements model.IModel {
@@ -203,6 +242,14 @@ class Axis implements model.IModel {
     glm.mat4.identity(this.modelMat);
     glm.mat4.mul(this.modelMat, this.translation, this.rotation);
   }
+
+  Reset(): void {
+    glm.mat4.identity(this.nutation);
+    glm.mat4.identity(this.precession);
+    glm.mat4.identity(this.rotation);
+    glm.mat4.identity(this.translation);
+    glm.mat4.identity(this.modelMat);
+  }
 }
 
 class Disk implements model.IModel {
@@ -230,7 +277,7 @@ class Disk implements model.IModel {
     glm.mat4.identity(this.translation);
   }
 
-  Update(diskPos: number[], dPsi: number, dPhi: number, dTheta: number): void {
+  Update(diskPos: number[], radius: number, dPsi: number, dPhi: number, dTheta: number): void {
     glm.mat4.identity(this.translation);
     glm.mat4.translate(this.translation, this.translation, new Float32Array(diskPos));
 
@@ -244,5 +291,20 @@ class Disk implements model.IModel {
 
     glm.mat4.identity(this.modelMat);
     glm.mat4.mul(this.modelMat, this.translation, this.rotation);
+
+    glm.mat4.scale(this.modelMat, this.modelMat, [radius, radius, 1.0]);
+  }
+
+  Reset(diskPos: number[], radius: number): void {
+    glm.mat4.identity(this.nutation);
+    glm.mat4.identity(this.precession);
+    glm.mat4.identity(this.diskRotation);
+    glm.mat4.identity(this.rotation);
+    glm.mat4.identity(this.translation);
+    glm.mat4.identity(this.modelMat);
+
+    glm.mat4.translate(this.translation, this.translation, new Float32Array(diskPos));
+    glm.mat4.mul(this.modelMat, this.translation, this.modelMat);
+    glm.mat4.scale(this.modelMat, this.modelMat, [radius, radius, 1.0]);
   }
 }
