@@ -174,26 +174,36 @@ function startup(): void {
   (document.getElementById("distance") as HTMLInputElement).addEventListener("input", function () {
     gyroscope.length = parseFloat(this.value);
     gyroscope.SetTransform();
+
+    trajectory.Clear();
   });
 
   (document.getElementById("mass") as HTMLInputElement).addEventListener("input", function () {
     gyroscope.mass = parseFloat(this.value);
     gyroscope.SetTransform();
+
+    trajectory.Clear();
   });
 
   (document.getElementById("radius") as HTMLInputElement).addEventListener("input", function () {
     gyroscope.radius = parseFloat(this.value);
     gyroscope.SetTransform();
+
+    trajectory.Clear();
   });
 
   (document.getElementById("rotation-speed") as HTMLInputElement).addEventListener("input", function () {
     gyroscope.psi_dot = parseFloat(this.value);
     gyroscope.SetTransform();
+
+    trajectory.Clear();
   });
 
   (document.getElementById("initial-speed") as HTMLInputElement).addEventListener("input", function () {
     gyroscope.phi_dot = parseFloat(this.value);
     gyroscope.SetTransform();
+
+    trajectory.Clear();
   });
 
   (document.getElementById("initial-angle") as HTMLInputElement).addEventListener("input", function () {

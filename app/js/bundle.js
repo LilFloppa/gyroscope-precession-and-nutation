@@ -229,22 +229,27 @@ function startup() {
     document.getElementById("distance").addEventListener("input", function () {
         gyroscope.length = parseFloat(this.value);
         gyroscope.SetTransform();
+        trajectory.Clear();
     });
     document.getElementById("mass").addEventListener("input", function () {
         gyroscope.mass = parseFloat(this.value);
         gyroscope.SetTransform();
+        trajectory.Clear();
     });
     document.getElementById("radius").addEventListener("input", function () {
         gyroscope.radius = parseFloat(this.value);
         gyroscope.SetTransform();
+        trajectory.Clear();
     });
     document.getElementById("rotation-speed").addEventListener("input", function () {
         gyroscope.psi_dot = parseFloat(this.value);
         gyroscope.SetTransform();
+        trajectory.Clear();
     });
     document.getElementById("initial-speed").addEventListener("input", function () {
         gyroscope.phi_dot = parseFloat(this.value);
         gyroscope.SetTransform();
+        trajectory.Clear();
     });
     document.getElementById("initial-angle").addEventListener("input", function () {
         gyroscope.theta = glm.glMatrix.toRadian(parseFloat(this.value));
