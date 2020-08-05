@@ -2,12 +2,6 @@ let popup_count = 0;
 
 $(function() {
 
-	/* Button off */
-	$(".button").on("click", function(e) {
-		$(this).addClass("disabled");
-	});
-
-
 	/* Main buttons */
 	$(".start-main").on("click", function(e) {
 		$(".pause-main, .reset-main").removeClass("disabled");
@@ -49,40 +43,6 @@ $(function() {
 	let min = 0, sec = 0, ms = 0;
 	let isStoped = false, isStarted = false;
 
-	$(".start-timer").on("click", function(e) {
-		if (!isStarted)
-			Timer();
-
-		isStoped = false;
-
-		$(".pause-timer, .reset-timer").removeClass("disabled");
-	});
-
-	$(".pause-timer").on("click", function(e) {
-		isStoped = true;
-
-		$(".start-timer").removeClass("disabled");
-	});
-
-	$(".reset-timer").on("click", function(e) {
-		isStoped = true;
-
-		min = 0;
-		sec = 0;
-		ms = 0;
-
-		minute = "";
-		second = "";
-		msecond = "";
-
-		$('.timer__minutes').html("00");
-		$('.timer__seconds').html("00");
-		$('.timer__milliseconds').html("00");
-
-		$(".pause-timer").addClass("disabled");
-		$(".start-timer").removeClass("disabled");
-	});
-
 	function Timer() {
 		setInterval(function Time() {
 			if (!isStoped) {
@@ -114,6 +74,95 @@ $(function() {
 
 		isStarted = true;
 	}
+
+
+	// Checkbox for timer
+	$(".timer__checkbox").on("click", function(e) { 
+		$(".check").toggleClass("is-checked"); 
+
+		TimerControl();
+	});
+
+	let start = ".start-timer",
+			pause = ".pause-timer",
+			reset = ".reset-timer";
+
+	function TimerControl() {
+		if ($(".timer__checkbox").children(".check").hasClass("is-checked")) {
+			$(".start-timer").addClass("disabled");
+
+			start = ".start-main";
+			pause = ".pause-main";
+			reset = ".reset-main";
+		} 
+		else {
+			$(".start-timer").removeClass("disabled");
+
+			start = ".start-timer";
+			pause = ".pause-timer";
+			reset = ".reset-timer";
+		}
+	}
+
+	/* Button off and check timer */
+	$(".button").on("click", function(e) {
+		TimerControl();
+
+		if ($(this)[0] == $(start)[0]) {
+			if (!isStarted)
+				Timer();
+
+			isStoped = false;
+
+			if (start == ".start-timer") {
+				$(".pause-timer, .reset-timer").removeClass("disabled");
+				$(".timer__checkbox").addClass("disabled");
+			}
+			else {
+				$(".polyline").addClass("disabled");
+
+				setTimeout(function DisableCheckbox() {
+					$(".timer__checkbox").addClass("disabled");
+				}, 250);
+			}
+		}
+		else if ($(this)[0] == $(pause)[0]) {
+			isStoped = true;
+
+			if (pause == ".pause-timer")
+				$(".start-timer").removeClass("disabled");
+		}
+		else if ($(this)[0] == $(reset)[0]) {
+			isStoped = true;
+
+			min = 0;
+			sec = 0;
+			ms = 0;
+
+			minute = "";
+			second = "";
+			msecond = "";
+
+			$('.timer__minutes').html("00");
+			$('.timer__seconds').html("00");
+			$('.timer__milliseconds').html("00");
+
+			if (reset == ".reset-timer") {
+				$(".pause-timer").addClass("disabled");
+				$(".start-timer").removeClass("disabled");
+				$(".timer__checkbox").removeClass("disabled");
+			}
+			else {
+				$(".polyline").removeClass("disabled");
+
+				setTimeout(function DisableCheckbox() {
+					$(".timer__checkbox").removeClass("disabled");
+				}, 250);
+			}
+		}
+
+		$(this).addClass("disabled");
+	});
 
 
 	/* Popup */
@@ -252,7 +301,7 @@ function Drag(handleID, dragID, index) {
 
 function Position(dragID) {
 	let drag 			= document.getElementById(dragID),
-			container = document.getElementById("container");
+	container = document.getElementById("container");
 
 	if (drag.offsetTop < 0)
 		drag.style.top = "0px";
@@ -266,6 +315,10 @@ function Position(dragID) {
 	if (drag.offsetLeft + drag.clientWidth > container.clientWidth)
 		drag.style.left = container.clientWidth - drag.clientWidth + "px";
 }
+
+
+/* Redraw canvas on resize */
+
 
 
 /* Plots */
