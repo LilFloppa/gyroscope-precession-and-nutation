@@ -66,6 +66,18 @@ function glCanvasOnResize(): void {
   gl.canvas.height = height;
 
   gl.viewport(0, 0, width, height);
+
+  let proj: glm.mat4 = glm.mat4.create();
+  proj = glm.mat4.identity(proj);
+
+  glm.mat4.perspective(
+    proj,
+    glm.glMatrix.toRadian(45.0),
+    width / height,
+    0.1,
+    1000
+  );
+  shader.setMat4("proj", proj as Float32Array);
 }
 
 let gyroscope: Gyroscope;
@@ -94,7 +106,10 @@ function startup(): void {
   // Init scene shader
   shader = new Shader(shadersources.vertBase, shadersources.FragBase);
   // Init trajectory shader
-  trajectoryShader = new Shader(shadersources.vertTrajectory, shadersources.FragTrajectory);
+  trajectoryShader = new Shader(
+    shadersources.vertTrajectory,
+    shadersources.FragTrajectory
+  );
   // Init camera
   camera = new Camera();
 
@@ -109,9 +124,17 @@ function startup(): void {
     parseFloat((document.getElementById("distance") as HTMLInputElement).value),
     parseFloat((document.getElementById("mass") as HTMLInputElement).value),
     parseFloat((document.getElementById("radius") as HTMLInputElement).value),
-    parseFloat((document.getElementById("rotation-speed") as HTMLInputElement).value),
-    parseFloat((document.getElementById("initial-speed") as HTMLInputElement).value),
-    glm.glMatrix.toRadian(parseFloat((document.getElementById("initial-angle") as HTMLInputElement).value))
+    parseFloat(
+      (document.getElementById("rotation-speed") as HTMLInputElement).value
+    ),
+    parseFloat(
+      (document.getElementById("initial-speed") as HTMLInputElement).value
+    ),
+    glm.glMatrix.toRadian(
+      parseFloat(
+        (document.getElementById("initial-angle") as HTMLInputElement).value
+      )
+    )
   );
 
   // Init trajectory
@@ -129,11 +152,46 @@ function startup(): void {
 
   // Load lights
   Lights = [];
-  Lights.push(new DirectionalLight([0.0, -1.0, 0.0], [0.1, 0.1, 0.1], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
-  Lights.push(new DirectionalLight([0.0, 0.0, -1.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
-  Lights.push(new DirectionalLight([0.0, 0.0, 1.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
-  Lights.push(new DirectionalLight([1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
-  Lights.push(new DirectionalLight([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.7, 0.7, 0.7], [0.2, 0.2, 0.2]));
+  Lights.push(
+    new DirectionalLight(
+      [0.0, -1.0, 0.0],
+      [0.1, 0.1, 0.1],
+      [0.7, 0.7, 0.7],
+      [0.2, 0.2, 0.2]
+    )
+  );
+  Lights.push(
+    new DirectionalLight(
+      [0.0, 0.0, -1.0],
+      [0.0, 0.0, 0.0],
+      [0.7, 0.7, 0.7],
+      [0.2, 0.2, 0.2]
+    )
+  );
+  Lights.push(
+    new DirectionalLight(
+      [0.0, 0.0, 1.0],
+      [0.0, 0.0, 0.0],
+      [0.7, 0.7, 0.7],
+      [0.2, 0.2, 0.2]
+    )
+  );
+  Lights.push(
+    new DirectionalLight(
+      [1.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0],
+      [0.7, 0.7, 0.7],
+      [0.2, 0.2, 0.2]
+    )
+  );
+  Lights.push(
+    new DirectionalLight(
+      [-1.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0],
+      [0.7, 0.7, 0.7],
+      [0.2, 0.2, 0.2]
+    )
+  );
 
   // Set light
   shader.use();
@@ -141,72 +199,105 @@ function startup(): void {
   for (let light of Lights) {
     shader.setVec3("lights[" + i + "].ambient", light.ambient as Float32Array);
     shader.setVec3("lights[" + i + "].diffuse", light.diffuse as Float32Array);
-    shader.setVec3("lights[" + i + "].specular", light.specular as Float32Array);
-    shader.setVec3("lights[" + i + "].direction", light.direction as Float32Array);
+    shader.setVec3(
+      "lights[" + i + "].specular",
+      light.specular as Float32Array
+    );
+    shader.setVec3(
+      "lights[" + i + "].direction",
+      light.direction as Float32Array
+    );
     i++;
   }
 
   // Set projection matrix
   let proj: glm.mat4 = glm.mat4.create();
   proj = glm.mat4.identity(proj);
-  glm.mat4.perspective(proj, glm.glMatrix.toRadian(45.0), width / height, 0.1, 1000);
+  glm.mat4.perspective(
+    proj,
+    glm.glMatrix.toRadian(45.0),
+    width / height,
+    0.1,
+    1000
+  );
   shader.setMat4("proj", proj as Float32Array);
 
   trajectoryShader.use();
   trajectoryShader.setMat4("t_proj", proj as Float32Array);
 
   // Init Buttons
-  document.getElementById("start").addEventListener("click", function (ev: MouseEvent) {
-    running = true;
-  });
+  document
+    .getElementById("start")
+    .addEventListener("click", function (ev: MouseEvent) {
+      running = true;
+    });
 
-  document.getElementById("pause").addEventListener("click", function (ev: MouseEvent) {
-    running = false;
-  });
+  document
+    .getElementById("pause")
+    .addEventListener("click", function (ev: MouseEvent) {
+      running = false;
+    });
 
-  document.getElementById("reset").addEventListener("click", function (ev: MouseEvent) {
-    running = false;
-    gyroscope.Reset();
-    trajectory.Clear();
-  });
+  document
+    .getElementById("reset")
+    .addEventListener("click", function (ev: MouseEvent) {
+      running = false;
+      gyroscope.Reset();
+      trajectory.Clear();
+    });
 
   // Init sliders
-  (document.getElementById("distance") as HTMLInputElement).addEventListener("input", function () {
-    gyroscope.length = parseFloat(this.value);
-    gyroscope.SetTransform();
+  (document.getElementById("distance") as HTMLInputElement).addEventListener(
+    "input",
+    function () {
+      gyroscope.length = parseFloat(this.value);
+      gyroscope.SetTransform();
 
-    trajectory.Clear();
-  });
+      trajectory.Clear();
+    }
+  );
 
-  (document.getElementById("mass") as HTMLInputElement).addEventListener("input", function () {
-    gyroscope.mass = parseFloat(this.value);
-    gyroscope.SetTransform();
+  (document.getElementById("mass") as HTMLInputElement).addEventListener(
+    "input",
+    function () {
+      gyroscope.mass = parseFloat(this.value);
+      gyroscope.SetTransform();
 
-    trajectory.Clear();
-  });
+      trajectory.Clear();
+    }
+  );
 
-  (document.getElementById("radius") as HTMLInputElement).addEventListener("input", function () {
-    gyroscope.radius = parseFloat(this.value);
-    gyroscope.SetTransform();
+  (document.getElementById("radius") as HTMLInputElement).addEventListener(
+    "input",
+    function () {
+      gyroscope.radius = parseFloat(this.value);
+      gyroscope.SetTransform();
 
-    trajectory.Clear();
-  });
+      trajectory.Clear();
+    }
+  );
 
-  (document.getElementById("rotation-speed") as HTMLInputElement).addEventListener("input", function () {
+  (document.getElementById(
+    "rotation-speed"
+  ) as HTMLInputElement).addEventListener("input", function () {
     gyroscope.psi_dot = parseFloat(this.value);
     gyroscope.SetTransform();
 
     trajectory.Clear();
   });
 
-  (document.getElementById("initial-speed") as HTMLInputElement).addEventListener("input", function () {
+  (document.getElementById(
+    "initial-speed"
+  ) as HTMLInputElement).addEventListener("input", function () {
     gyroscope.phi_dot = parseFloat(this.value);
     gyroscope.SetTransform();
 
     trajectory.Clear();
   });
 
-  (document.getElementById("initial-angle") as HTMLInputElement).addEventListener("input", function () {
+  (document.getElementById(
+    "initial-angle"
+  ) as HTMLInputElement).addEventListener("input", function () {
     gyroscope.theta = glm.glMatrix.toRadian(parseFloat(this.value));
     gyroscope.SetTransform();
 
@@ -235,7 +326,8 @@ function draw(): void {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // Process mouse input for camera
-  if (mouseDown) camera.ProcessMouseMovement(currentX - lastX, currentY - lastY);
+  if (mouseDown)
+    camera.ProcessMouseMovement(currentX - lastX, currentY - lastY);
   lastX = currentX;
   lastY = currentY;
 
