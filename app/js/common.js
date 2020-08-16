@@ -1,344 +1,344 @@
 let popup_count = 0;
 
-$(function() {
+$(function () {
+  /* Main buttons */
+  $(".start-main").on("click", function (e) {
+    $(".pause-main, .reset-main").removeClass("disabled");
+    $(".slider").addClass("disabled");
+  });
 
-	/* Main buttons */
-	$(".start-main").on("click", function(e) {
-		$(".pause-main, .reset-main").removeClass("disabled");
-		$(".slider").addClass("disabled");
-	});
+  $(".pause-main").on("click", function (e) {
+    $(".start-main").removeClass("disabled");
+    $(".slider").removeClass("disabled");
+  });
 
-	$(".pause-main").on("click", function(e) {
-		$(".start-main").removeClass("disabled");
-		$(".slider").removeClass("disabled");
-	});	
+  $(".reset-main").on("click", function (e) {
+    $("#distance").val(0.2);
+    $("#mass").val(0.1);
+    $("#radius").val(0.08);
+    $("#rotation-speed").val(500);
+    $("#initial-speed").val(0);
+    $("#initial-angle").val(90);
 
-	$(".reset-main").on("click", function(e) {
-		$("#distance").val(0.2);
-		$("#mass").val(0.1);
-		$("#radius").val(0.08);
-		$("#rotation-speed").val(500);
-		$("#initial-speed").val(0);
-		$("#initial-angle").val(90);
+    setText();
 
-		setText();
+    $(".pause-main").addClass("disabled");
+    $(".start-main").removeClass("disabled");
+    $(".slider").removeClass("disabled");
+  });
 
-		$(".pause-main").addClass("disabled");
-		$(".start-main").removeClass("disabled");
-		$(".slider").removeClass("disabled");
-	});
+  /* Sliders */
+  function setText() {
+    $(
+      "#distance, #mass, #radius, #rotation-speed, #initial-speed, #initial-angle"
+    )
+      .on("input", function () {
+        let el = $(this);
+        el.closest(".parameters__wrapper")
+          .children(".parameters__text")
+          .children("span")
+          .html(el.val());
+      })
+      .trigger("input");
+  }
+  setText();
 
+  /* Timer */
+  let min = 0,
+    sec = 0,
+    ms = 0;
+  let isStoped = false,
+    isStarted = false;
 
-	/* Sliders */
-	function setText() {
-		$("#distance, #mass, #radius, #rotation-speed, #initial-speed, #initial-angle").on("input", function() {
-			let el = $(this);
-			el.closest(".parameters__wrapper").children(".parameters__text").children("span").html(el.val());
-		}).trigger("input");
-	}
-	setText();
+  function Timer() {
+    setInterval(function Time() {
+      if (!isStoped) {
+        sec++;
+        if (sec >= 60) {
+          min++;
+          sec -= 60;
+        }
 
+        let minute = min < 10 ? "0" + min : min,
+          second = sec < 10 ? "0" + sec : sec;
 
-	/* Timer */
-	let min = 0, sec = 0, ms = 0;
-	let isStoped = false, isStarted = false;
+        $(".timer__minutes").html(minute);
+        $(".timer__seconds").html(second);
+      }
+    }, 1000);
 
-	function Timer() {
-		setInterval(function Time() {
-			if (!isStoped) {
-				sec++;
-				if (sec >= 60) {
-					min++;
-					sec -= 60;
-				}
+    setInterval(function Milliseconds() {
+      if (!isStoped) {
+        ms++;
+        if (ms >= 100) ms -= 100;
 
-				let minute  = (min < 10) ? '0' + min : min,
-				second  = (sec < 10) ? '0' + sec : sec;
+        let msecond = ms < 10 ? "0" + ms : ms;
 
-				$('.timer__minutes').html(minute);
-				$('.timer__seconds').html(second);
-			}
-		}, 1000);
+        $(".timer__milliseconds").html(msecond);
+      }
+    }, 10);
 
-		setInterval(function Milliseconds() {
-			if (!isStoped) {
-				ms++;
-				if (ms >= 100) 
-					ms -= 100; 
+    isStarted = true;
+  }
 
-				let msecond  = (ms < 10) ? '0' + ms : ms;
+  // Checkbox for timer
+  $(".timer__checkbox").on("click", function (e) {
+    $(".check").toggleClass("is-checked");
 
-				$('.timer__milliseconds').html(msecond);
-			}
-		}, 10);
+    TimerControl();
+  });
 
-		isStarted = true;
-	}
+  let start = ".start-timer",
+    pause = ".pause-timer",
+    reset = ".reset-timer";
 
+  function TimerControl() {
+    if ($(".timer__checkbox").children(".check").hasClass("is-checked")) {
+      $(".start-timer").addClass("disabled");
 
-	// Checkbox for timer
-	$(".timer__checkbox").on("click", function(e) { 
-		$(".check").toggleClass("is-checked"); 
+      start = ".start-main";
+      pause = ".pause-main";
+      reset = ".reset-main";
+    } else {
+      $(".start-timer").removeClass("disabled");
 
-		TimerControl();
-	});
+      start = ".start-timer";
+      pause = ".pause-timer";
+      reset = ".reset-timer";
+    }
+  }
 
-	let start = ".start-timer",
-			pause = ".pause-timer",
-			reset = ".reset-timer";
+  /* Button off and check timer */
+  $(".button").on("click", function (e) {
+    TimerControl();
 
-	function TimerControl() {
-		if ($(".timer__checkbox").children(".check").hasClass("is-checked")) {
-			$(".start-timer").addClass("disabled");
+    if ($(this)[0] == $(start)[0]) {
+      if (!isStarted) Timer();
 
-			start = ".start-main";
-			pause = ".pause-main";
-			reset = ".reset-main";
-		} 
-		else {
-			$(".start-timer").removeClass("disabled");
+      isStoped = false;
 
-			start = ".start-timer";
-			pause = ".pause-timer";
-			reset = ".reset-timer";
-		}
-	}
+      if (start == ".start-timer") {
+        $(".pause-timer, .reset-timer").removeClass("disabled");
+        $(".timer__checkbox").addClass("disabled");
+      } else {
+        $(".polyline").addClass("disabled");
 
-	/* Button off and check timer */
-	$(".button").on("click", function(e) {
-		TimerControl();
+        setTimeout(function DisableCheckbox() {
+          $(".timer__checkbox").addClass("disabled");
+        }, 250);
+      }
+    } else if ($(this)[0] == $(pause)[0]) {
+      isStoped = true;
 
-		if ($(this)[0] == $(start)[0]) {
-			if (!isStarted)
-				Timer();
+      if (pause == ".pause-timer") $(".start-timer").removeClass("disabled");
+    } else if ($(this)[0] == $(reset)[0]) {
+      isStoped = true;
 
-			isStoped = false;
+      min = 0;
+      sec = 0;
+      ms = 0;
 
-			if (start == ".start-timer") {
-				$(".pause-timer, .reset-timer").removeClass("disabled");
-				$(".timer__checkbox").addClass("disabled");
-			}
-			else {
-				$(".polyline").addClass("disabled");
+      minute = "";
+      second = "";
+      msecond = "";
 
-				setTimeout(function DisableCheckbox() {
-					$(".timer__checkbox").addClass("disabled");
-				}, 250);
-			}
-		}
-		else if ($(this)[0] == $(pause)[0]) {
-			isStoped = true;
+      $(".timer__minutes").html("00");
+      $(".timer__seconds").html("00");
+      $(".timer__milliseconds").html("00");
 
-			if (pause == ".pause-timer")
-				$(".start-timer").removeClass("disabled");
-		}
-		else if ($(this)[0] == $(reset)[0]) {
-			isStoped = true;
+      if (reset == ".reset-timer") {
+        $(".pause-timer").addClass("disabled");
+        $(".start-timer").removeClass("disabled");
+        $(".timer__checkbox").removeClass("disabled");
+      } else {
+        $(".polyline").removeClass("disabled");
 
-			min = 0;
-			sec = 0;
-			ms = 0;
+        setTimeout(function DisableCheckbox() {
+          $(".timer__checkbox").removeClass("disabled");
+        }, 250);
+      }
+    }
 
-			minute = "";
-			second = "";
-			msecond = "";
+    $(this).addClass("disabled");
+  });
 
-			$('.timer__minutes').html("00");
-			$('.timer__seconds').html("00");
-			$('.timer__milliseconds').html("00");
+  /* Popup */
+  $(".popup").mousedown(function () {
+    $(this).css("z-index", "10" + popup_count);
+    $(".popup")
+      .not(this)
+      .css("z-index", "10" + popup_count - 1);
+  });
 
-			if (reset == ".reset-timer") {
-				$(".pause-timer").addClass("disabled");
-				$(".start-timer").removeClass("disabled");
-				$(".timer__checkbox").removeClass("disabled");
-			}
-			else {
-				$(".polyline").removeClass("disabled");
+  function OnClickNav(nav, popup, handleID, dragID) {
+    $(nav).addClass("disabled").closest("li").addClass("disabled");
 
-				setTimeout(function DisableCheckbox() {
-					$(".timer__checkbox").removeClass("disabled");
-				}, 250);
-			}
-		}
+    if (!$(popup).hasClass("active")) popup_count++;
 
-		$(this).addClass("disabled");
-	});
+    $(popup).addClass("active");
+    Drag(handleID, dragID, popup_count);
+  }
 
+  /* Show popup */
+  $(".theta-from-phi").click(function () {
+    OnClickNav(
+      this,
+      ".popup-theta-from-phi",
+      "handleThetaFromPhi",
+      "dragThetaFromPhi"
+    );
+  });
 
-	/* Popup */
-	$('.popup').mousedown(function() {
-		$(this).css("z-index", "10" + popup_count);
-		$(".popup").not(this).css("z-index", "10" + popup_count - 1);
-	});
+  $(".theta-from-t").click(function () {
+    OnClickNav(
+      this,
+      ".popup-theta-from-t",
+      "handleThetaFromT",
+      "dragThetaFromT"
+    );
+  });
 
-	function OnClickNav(nav, popup, handleID, dragID) {
-		$(nav).addClass('disabled').closest("li").addClass('disabled');
+  $(".kinetic").click(function () {
+    OnClickNav(this, ".popup-kinetic", "handleKinetic", "dragKinetic");
+  });
 
-		if (!($(popup).hasClass('active')))
-			popup_count++;
+  $(".potential").click(function () {
+    OnClickNav(this, ".popup-potential", "handlePotential", "dragPotential");
+  });
 
-		$(popup).addClass('active');
-		Drag(handleID, dragID, popup_count);
-	}
+  $(".total").click(function () {
+    OnClickNav(this, ".popup-total", "handleTotal", "dragTotal");
+  });
 
+  $(".manual").click(function () {
+    OnClickNav(this, ".popup-manual", "handleManual", "dragManual");
+  });
 
-	/* Show popup */
-	$('.theta-from-phi').click(function() {
-		OnClickNav(this, ".popup-theta-from-phi", "handleThetaFromPhi", "dragThetaFromPhi");
-	});
+  $(".theory").click(function () {
+    OnClickNav(this, ".popup-theory", "handleTheory", "dragTheory");
+  });
 
-	$('.theta-from-t').click(function() {
-		OnClickNav(this, ".popup-theta-from-t", "handleThetaFromT", "dragThetaFromT");
-	});
+  $(".developers").click(function () {
+    OnClickNav(this, ".popup-developers", "handleDevelopers", "dragDevelopers");
+  });
 
-	$('.kinetic').click(function() {
-		OnClickNav(this, ".popup-kinetic", "handleKinetic", "dragKinetic");		
-	});
+  /* Hide popup */
+  $(".popup__close").click(function () {
+    $(this).closest(".popup").removeClass("active").css("z-index", "100");
+    popup_count--;
+  });
 
-	$('.potential').click(function() {
-		OnClickNav(this, ".popup-potential", "handlePotential", "dragPotential");		
-	});
+  $(".popup-theta-from-phi .popup__close").click(function () {
+    $(".theta-from-phi")
+      .removeClass("disabled")
+      .closest("li")
+      .removeClass("disabled");
+  });
 
-	$('.total').click(function() {
-		OnClickNav(this, ".popup-total", "handleTotal", "dragTotal");		
-	});
+  $(".popup-theta-from-t .popup__close").click(function () {
+    $(".theta-from-t")
+      .removeClass("disabled")
+      .closest("li")
+      .removeClass("disabled");
+  });
 
-	$('.manual').click(function() {
-		OnClickNav(this, ".popup-manual", "handleManual", "dragManual");		
-	});
+  $(".popup-kinetic .popup__close").click(function () {
+    $(".kinetic").removeClass("disabled").closest("li").removeClass("disabled");
+  });
 
-	$('.theory').click(function() {
-		OnClickNav(this, ".popup-theory", "handleTheory", "dragTheory");		
-	});
+  $(".popup-potential .popup__close").click(function () {
+    $(".potential")
+      .removeClass("disabled")
+      .closest("li")
+      .removeClass("disabled");
+  });
 
-	$('.developers').click(function() {
-		OnClickNav(this, ".popup-developers", "handleDevelopers", "dragDevelopers");		
-	});
+  $(".popup-total .popup__close").click(function () {
+    $(".total").removeClass("disabled").closest("li").removeClass("disabled");
+  });
 
+  $(".popup-manual .popup__close").click(function () {
+    $(".manual").removeClass("disabled").closest("li").removeClass("disabled");
+  });
 
-	/* Hide popup */
-	$('.popup__close').click(function() {
-		$(this).closest('.popup').removeClass('active').css("z-index", "100");
-		popup_count--;
-	});
+  $(".popup-theory .popup__close").click(function () {
+    $(".theory").removeClass("disabled").closest("li").removeClass("disabled");
+  });
 
-	$('.popup-theta-from-phi .popup__close').click(function() {
-		$('.theta-from-phi').removeClass('disabled').closest("li").removeClass('disabled');
-	});
-
-	$('.popup-theta-from-t .popup__close').click(function() {
-		$('.theta-from-t').removeClass('disabled').closest("li").removeClass('disabled');
-	});
-
-	$('.popup-kinetic .popup__close').click(function() {
-		$('.kinetic').removeClass('disabled').closest("li").removeClass('disabled');
-	});
-
-	$('.popup-potential .popup__close').click(function() {
-		$('.potential').removeClass('disabled').closest("li").removeClass('disabled');
-	});
-
-	$('.popup-total .popup__close').click(function() {
-		$('.total').removeClass('disabled').closest("li").removeClass('disabled');
-	});
-
-	$('.popup-manual .popup__close').click(function() {
-		$('.manual').removeClass('disabled').closest("li").removeClass('disabled');
-	});
-
-	$('.popup-theory .popup__close').click(function() {
-		$('.theory').removeClass('disabled').closest("li").removeClass('disabled');
-	});
-
-	$('.popup-developers .popup__close').click(function() {
-		$('.developers').removeClass('disabled').closest("li").removeClass('disabled');
-	});
-
+  $(".popup-developers .popup__close").click(function () {
+    $(".developers")
+      .removeClass("disabled")
+      .closest("li")
+      .removeClass("disabled");
+  });
 });
-
 
 /* Dock panel */
 function Drag(handleID, dragID, index) {
-	let mousePosition,
-	offset = [0, 0],
-	handle = document.getElementById(handleID),
-	drag = document.getElementById(dragID),
-	isDown = false;
+  let mousePosition,
+    offset = [0, 0],
+    handle = document.getElementById(handleID),
+    drag = document.getElementById(dragID),
+    isDown = false;
 
-	if (index <= 2)
-		drag.style.top = 50 + 40 * index + "px";
-	else if (index > 4 && index < 8)
-		drag.style.top = 50 + 40 * (index - 4) + "px";
-	else if (index == 8)
-		drag.style.top = 50 + 40 * (index - 6) + "px";
-	else
-		drag.style.top = 50 + (-40 * (index - 4)) + "px";
+  if (index <= 2) drag.style.top = 50 + 40 * index + "px";
+  else if (index > 4 && index < 8)
+    drag.style.top = 50 + 40 * (index - 4) + "px";
+  else if (index == 8) drag.style.top = 50 + 40 * (index - 6) + "px";
+  else drag.style.top = 50 + -40 * (index - 4) + "px";
 
-	drag.style.left = 300 + 40 * index + "px";
+  drag.style.left = 300 + 40 * index + "px";
 
-	Position(dragID);
+  Position(dragID);
 
-	handle.addEventListener('mousedown', function(e) {
-		isDown = true;
-		offset = [drag.offsetLeft - e.clientX, drag.offsetTop - e.clientY];
-	}, true);
+  handle.addEventListener(
+    "mousedown",
+    function (e) {
+      isDown = true;
+      offset = [drag.offsetLeft - e.clientX, drag.offsetTop - e.clientY];
+    },
+    true
+  );
 
-	document.addEventListener('mouseup', function() { isDown = false; }, true);
+  document.addEventListener(
+    "mouseup",
+    function () {
+      isDown = false;
+    },
+    true
+  );
 
-	document.addEventListener('mousemove', function(event) {
-		if (isDown) {
-			mousePosition = { x : event.clientX, y : event.clientY };
+  document.addEventListener(
+    "mousemove",
+    function (event) {
+      if (isDown) {
+        mousePosition = { x: event.clientX, y: event.clientY };
 
-			drag.style.left = (mousePosition.x + offset[0]) + 'px';
-			drag.style.top  = (mousePosition.y + offset[1]) + 'px';
+        drag.style.left = mousePosition.x + offset[0] + "px";
+        drag.style.top = mousePosition.y + offset[1] + "px";
 
-			Position(dragID);
-		}
-	}, true);
+        Position(dragID);
+      }
+    },
+    true
+  );
 
-	drag.style.zIndex = 100 + popup_count;
+  drag.style.zIndex = 100 + popup_count;
 }
 
 function Position(dragID) {
-	let drag 			= document.getElementById(dragID),
-	container = document.getElementById("container");
+  let drag = document.getElementById(dragID),
+    container = document.getElementById("container");
 
-	if (drag.offsetTop < 0)
-		drag.style.top = "0px";
+  if (drag.offsetTop < 0) drag.style.top = "0px";
 
-	if (drag.offsetLeft < 0)
-		drag.style.left = "0px";
+  if (drag.offsetLeft < 0) drag.style.left = "0px";
 
-	if (drag.offsetTop + drag.clientHeight > container.clientHeight - 2)
-		drag.style.top = container.clientHeight - drag.clientHeight - 2 + "px";
+  if (drag.offsetTop + drag.clientHeight > container.clientHeight - 2)
+    drag.style.top = container.clientHeight - drag.clientHeight - 2 + "px";
 
-	if (drag.offsetLeft + drag.clientWidth > container.clientWidth)
-		drag.style.left = container.clientWidth - drag.clientWidth + "px";
+  if (drag.offsetLeft + drag.clientWidth > container.clientWidth)
+    drag.style.left = container.clientWidth - drag.clientWidth + "px";
 }
 
-
 /* Redraw canvas on resize */
-
-
-
-/* Plots */
-let brdThetaFromPhi = JXG.JSXGraph.initBoard('ThetaFromPhi', {
-	axis: true, 
-	boundingbox: [-1, 1, 1, -1], 
-	registerEvents: false, 
-	grid: true,
-	keepAspectRatio: true,
-	showCopyright: false,
-	pan: {
-		enabled: true,
-		needShift: false,
-	}
-});
-brdThetaFromPhi.suspendUpdate();
-let ThetaFromPhiPlot = brdThetaFromPhi.create('functiongraph', [function(x) { return 0.5 * Math.cos(5 * x); }], { strokeWidth: 3, strokeColor: '#1e28ff' });
-brdThetaFromPhi.unsuspendUpdate();
-
-$(window).resize(function() { 
-	brdThetaFromPhi.resizeContainer($('#ThetaFromPhi').width(), $('#ThetaFromPhi').height(), true, true); 
-	brdThetaFromPhi.setBoundingBox([-1, 1, 1, -1], false); 
-}); 

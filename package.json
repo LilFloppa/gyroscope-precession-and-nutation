@@ -31,7 +31,9 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "@types/jquery": "^3.5.1",
     "gl-matrix": "^3.3.0",
+    "jsxgraph": "^1.1.0",
     "obj-file-parser-ts": "^0.6.4"
   }
 }

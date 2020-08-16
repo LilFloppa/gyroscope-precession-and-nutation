@@ -4,7 +4,7 @@ module.exports = {
   entry: "./src/index.ts",
   output: {
     filename: "bundle.js",
-    path: path.resolve("C:/xampp/htdocs/gyroscope/js"),
+    path: path.resolve("C:/repos/WebPhysics/app/js"),
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
