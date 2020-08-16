@@ -340,5 +340,3 @@ function Position(dragID) {
   if (drag.offsetLeft + drag.clientWidth > container.clientWidth)
     drag.style.left = container.clientWidth - drag.clientWidth + "px";
 }
-
-/* Redraw canvas on resize */
