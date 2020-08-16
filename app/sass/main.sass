@@ -2,6 +2,62 @@
 @import "libs"
 @import "global"
 
+.preloader
+	width: 100px
+	height: 100px
+	perspective: 780px
+	&__wrapper
+		background: $overlay
+		position: fixed
+		top: 0
+		left: 0
+		right: 0
+		bottom: 0
+		display: flex
+		align-items: center
+		justify-content: center
+		z-index: 100
+ 
+.load
+	position: absolute
+	width: 100%
+	height: 100%
+	border-radius: 50%
+	animation: 1.15s linear infinite
+	&-one
+		left: 0
+		top: 0
+		animation-name: rotate-one
+		border-bottom: 3px solid #5C5EDC
+	&-two
+		right: 0
+		top: 0
+		animation-name: rotate-two
+		border-right: 3px solid rgba(76, 70, 101, 0.99)
+	&-three
+		right: 0
+		bottom: 0
+		animation-name: rotate-three
+		border-top: 3px solid rgb(233, 144, 138)
+
+@keyframes rotate-one
+	from
+		transform: rotateX(35deg) rotateY(-45deg) rotateZ(0)
+	to
+		transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg)
+
+@keyframes rotate-two
+	from
+		transform: rotateX(50deg) rotateY(10deg) rotateZ(0)
+	to
+		transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg)
+
+@keyframes rotate-three
+	from
+		transform: rotateX(35deg) rotateY(55deg) rotateZ(0)
+	to
+		transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg)
+
 .header-menu__list
 	display: flex
 	user-select: none
@@ -254,7 +310,12 @@
 .repeat-sign
 	display: none
 
+#MJXc-Node-26, #MJXc-Node-31, #MJXc-Node-41, #MJXc-Node-46, #MJXc-Node-49, #MJXc-Node-52, #MJXc-Node-56, #MJXc-Node-59, #MJXc-Node-62, #MJXc-Node-65
+	font-size: 22px
 
+#MJXc-Node-53
+	font-size: 17px
+	transform: translateY(4px)
 
 
 
