@@ -188,8 +188,7 @@
 
       // Theta from phi
       let brdThetaFromPhi = JXG.JSXGraph.initBoard("ThetaFromPhi", {
-        axis: true,
-        boundingbox: [-0.5, 3, 2, 0],
+        boundingbox: [-0.5, 3, 2, -0.3],
         grid: true,
         keepAspectRatio: true,
         showCopyright: false,
@@ -203,10 +202,23 @@
           factorY: 1.25,
           wheel: true,
           needShift: false,
-          min: 0.001,
-          max: 1000.0,
+          min: 0.1,
+          max: 10.0,
         },
       });
+
+      brdThetaFromPhi.create('axis', [[0, 0], [1, 0]],
+      {
+        name:'$$φ$$', withLabel: true,
+        label: { position: 'rt', offset: [-2, -11] }
+      });
+
+      brdThetaFromPhi.create('axis', [[0, 0], [0, 1]],
+      {
+        name:'$$θ$$', withLabel: true,
+        label: { position: 'rt', offset: [8, 2] }
+      });
+
       brdThetaFromPhi.suspendUpdate();
 
       let ThetaFromPhiDataX = [];
@@ -219,20 +231,9 @@
       );
       brdThetaFromPhi.unsuspendUpdate();
 
-      $(window).resize(function () {
-        brdThetaFromPhi.resizeContainer(
-          $("#ThetaFromPhi").width(),
-          $("#ThetaFromPhi").height(),
-          true,
-          true
-        );
-        brdThetaFromPhi.setBoundingBox([-0.5, 3, 2, 0], false);
-      });
-
       // Theta from time
       let brdThetaFromT = JXG.JSXGraph.initBoard("ThetaFromT", {
-        axis: true,
-        boundingbox: [-0.5, 3, 2, 0],
+        boundingbox: [-0.5, 3, 2, -0.3],
         grid: true,
         keepAspectRatio: true,
         showCopyright: false,
@@ -246,10 +247,23 @@
           factorY: 1.25,
           wheel: true,
           needShift: false,
-          min: 0.001,
-          max: 1000.0,
+          min: 0.1,
+          max: 10.0,
         },
       });
+
+      brdThetaFromT.create('axis', [[0, 0], [1, 0]],
+      {
+        name:'$$t$$', withLabel: true,
+        label: { position: 'rt', offset: [-1, -13] }
+      });
+
+      brdThetaFromT.create('axis', [[0, 0], [0, 1]],
+      {
+        name:'$$θ$$', withLabel: true,
+        label: { position: 'rt', offset: [8, 2] }
+      });
+
       brdThetaFromT.suspendUpdate();
 
       let ThetaFromTDataX = [];
@@ -262,14 +276,187 @@
       );
       brdThetaFromT.unsuspendUpdate();
 
+      // Kinetic energy from time
+      let brdKinetic = JXG.JSXGraph.initBoard("kinetic", {
+        boundingbox: [-0.5, 3, 2, -0.3],
+        grid: true,
+        keepAspectRatio: true,
+        showCopyright: false,
+        showNavigation: false,
+        pan: {
+          enabled: true,
+          needShift: false,
+        },
+        zoom: {
+          factorX: 1.25,
+          factorY: 1.25,
+          wheel: true,
+          needShift: false,
+          min: 0.1,
+          max: 10.0,
+        },
+      });
+
+      brdKinetic.create('axis', [[0, 0], [1, 0]],
+      {
+        name:'$$t$$', withLabel: true,
+        label: { position: 'rt', offset: [-1, -13] }
+      });
+
+      brdKinetic.create('axis', [[0, 0], [0, 1]],
+      {
+        name:'E_k', withLabel: true,
+        label: { position: 'rt', offset: [8, 2] }
+      });
+
+      brdKinetic.suspendUpdate();
+
+      let KineticDataX = [];
+      let KineticDataY = [];
+
+      let KineticPlot = brdKinetic.create(
+        "curve",
+        [KineticDataX, KineticDataY],
+        { strokeWidth: 3, strokeColor: "#1e28ff" }
+      );
+      brdKinetic.unsuspendUpdate();
+
+      // Potential energy from time
+      let brdPotential = JXG.JSXGraph.initBoard("potential", {
+        boundingbox: [-0.5, 3, 2, -0.3],
+        grid: true,
+        keepAspectRatio: true,
+        showCopyright: false,
+        showNavigation: false,
+        pan: {
+          enabled: true,
+          needShift: false,
+        },
+        zoom: {
+          factorX: 1.25,
+          factorY: 1.25,
+          wheel: true,
+          needShift: false,
+          min: 0.1,
+          max: 10.0,
+        },
+      });
+
+      brdPotential.create('axis', [[0, 0], [1, 0]],
+      {
+        name:'$$t$$', withLabel: true,
+        label: { position: 'rt', offset: [-1, -13] }
+      });
+
+      brdPotential.create('axis', [[0, 0], [0, 1]],
+      {
+        name:'$$U$$', withLabel: true,
+        label: { position: 'rt', offset: [8, 2] }
+      });
+
+      brdPotential.suspendUpdate();
+
+      let PotentialDataX = [];
+      let PotentialDataY = [];
+
+      let PotentialPlot = brdPotential.create(
+        "curve",
+        [PotentialDataX, PotentialDataY],
+        { strokeWidth: 3, strokeColor: "#1e28ff" }
+      );
+      brdPotential.unsuspendUpdate();
+
+      // Total energy from time
+      let brdTotal = JXG.JSXGraph.initBoard("total", {
+        boundingbox: [-0.5, 3, 2, -0.3],
+        grid: true,
+        keepAspectRatio: true,
+        showCopyright: false,
+        showNavigation: false,
+        pan: {
+          enabled: true,
+          needShift: false,
+        },
+        zoom: {
+          factorX: 1.25,
+          factorY: 1.25,
+          wheel: true,
+          needShift: false,
+          min: 0.1,
+          max: 10.0,
+        },
+      });
+
+      brdTotal.create('axis', [[0, 0], [1, 0]],
+      {
+        name:'$$t$$', withLabel: true,
+        label: { position: 'rt', offset: [-1, -13] }
+      });
+
+      brdTotal.create('axis', [[0, 0], [0, 1]],
+      {
+        name:'$$E$$', withLabel: true,
+        label: { position: 'rt', offset: [8, 2] }
+      });
+
+      brdTotal.suspendUpdate();
+
+      let TotalDataX = [];
+      let TotalDataY = [];
+
+      let TotalPlot = brdTotal.create(
+        "curve",
+        [TotalDataX, TotalDataY],
+        { strokeWidth: 3, strokeColor: "#1e28ff" }
+      );
+      brdTotal.unsuspendUpdate();
+
+      // Update graphs on resize
       $(window).resize(function () {
+        // Theta from phi
+        brdThetaFromPhi.resizeContainer(
+          $("#ThetaFromPhi").width(),
+          $("#ThetaFromPhi").height(),
+          true,
+          true
+        );
+        brdThetaFromPhi.setBoundingBox([-0.5, 3, 2, -0.3], false);
+
+        // Theta from time
         brdThetaFromT.resizeContainer(
           $("#ThetaFromT").width(),
           $("#ThetaFromT").height(),
           true,
           true
         );
-        brdThetaFromT.setBoundingBox([-0.5, 3, 2, 0], false);
+        brdThetaFromT.setBoundingBox([-0.5, 3, 2, -0.3], false);
+
+        // Kinetic energy from time
+        brdKinetic.resizeContainer(
+          $("#kinetic").width(),
+          $("#kinetic").height(),
+          true,
+          true
+        );
+        brdKinetic.setBoundingBox([-0.5, 3, 2, -0.3], false);
+
+        // Potential energy from time
+        brdPotential.resizeContainer(
+          $("#potential").width(),
+          $("#potential").height(),
+          true,
+          true
+        );
+        brdPotential.setBoundingBox([-0.5, 3, 2, -0.3], false);
+
+        // Total energy from time
+        brdTotal.resizeContainer(
+          $("#total").width(),
+          $("#total").height(),
+          true,
+          true
+        );
+        brdTotal.setBoundingBox([-0.5, 3, 2, -0.3], false);
       });
 
       function glCanvasOnMouseDown(e) {
@@ -472,7 +659,38 @@
               { strokeWidth: 3, strokeColor: "#1e28ff" }
             );
 
-            // Ek from time
+            // Kinetic energy from time
+            KineticDataX = [];
+            KineticDataY = [];
+
+            brdKinetic.removeObject(KineticPlot);
+            KineticPlot = brdKinetic.create(
+              "curve",
+              [KineticDataX, KineticDataY],
+              { strokeWidth: 3, strokeColor: "#1e28ff" }
+            );
+
+            // Potential energy from time
+            PotentialDataX = [];
+            PotentialDataY = [];
+
+            brdPotential.removeObject(PotentialPlot);
+            PotentialPlot = brdPotential.create(
+              "curve",
+              [PotentialDataX, PotentialDataY],
+              { strokeWidth: 3, strokeColor: "#1e28ff" }
+            );
+
+            // Total energy from time
+            TotalDataX = [];
+            TotalDataY = [];
+
+            brdTotal.removeObject(TotalPlot);
+            TotalPlot = brdTotal.create(
+              "curve",
+              [TotalDataX, TotalDataY],
+              { strokeWidth: 3, strokeColor: "#1e28ff" }
+            );
           });
         // Init sliders
         document
@@ -581,6 +799,27 @@
 
         brdThetaFromT.suspendUpdate();
         brdThetaFromT.unsuspendUpdate();
+
+        // Kinetic energy from time
+        KineticDataX.push(time);
+        KineticDataY.push(gyroscope.GetEk());
+
+        brdKinetic.suspendUpdate();
+        brdKinetic.unsuspendUpdate();
+
+        // Potential energy from time
+        PotentialDataX.push(time);
+        PotentialDataY.push(gyroscope.GetU());
+
+        brdPotential.suspendUpdate();
+        brdPotential.unsuspendUpdate();
+
+        // Total energy from time
+        TotalDataX.push(time);
+        TotalDataY.push(gyroscope.GetE());
+
+        brdTotal.suspendUpdate();
+        brdTotal.unsuspendUpdate();
 
         // Next frame
         lastTime = currentTime;
@@ -10262,7 +10501,7 @@
           return this.mass * g * this.length * Math.cos(this.theta);
         };
         Gyroscope.prototype.GetE = function () {
-          return Math.round((this.GetEk() + this.GetU() * 10) / 10.0);
+          return Math.round((this.GetEk() + this.GetU()));
         };
         Gyroscope.prototype.Update = function (dt) {
           this.time += dt;
