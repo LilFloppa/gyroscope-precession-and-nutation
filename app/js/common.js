@@ -80,85 +80,85 @@ $(function () {
 	// }
 
 	// Checkbox for timer
-	$(".timer__checkbox").on("click", function (e) {
-		$(".check").toggleClass("is-checked");
+	// $(".timer__checkbox").on("click", function (e) {
+	// 	$(".check").toggleClass("is-checked");
 
-		TimerControl();
-	});
+	// 	TimerControl();
+	// });
 
-	let start = ".start-timer",
-	pause = ".pause-timer",
-	reset = ".reset-timer";
+	// let start = ".start-timer",
+	// pause = ".pause-timer",
+	// reset = ".reset-timer";
 
-	function TimerControl() {
-		if ($(".timer__checkbox").children(".check").hasClass("is-checked")) {
-			$(".start-timer").addClass("disabled");
+	// function TimerControl() {
+	// 	if ($(".timer__checkbox").children(".check").hasClass("is-checked")) {
+	// 		$(".start-timer").addClass("disabled");
 
-			start = ".start-main";
-			pause = ".pause-main";
-			reset = ".reset-main";
-		} else {
-			$(".start-timer").removeClass("disabled");
+	// 		start = ".start-main";
+	// 		pause = ".pause-main";
+	// 		reset = ".reset-main";
+	// 	} else {
+	// 		$(".start-timer").removeClass("disabled");
 
-			start = ".start-timer";
-			pause = ".pause-timer";
-			reset = ".reset-timer";
-		}
-	}
+	// 		start = ".start-timer";
+	// 		pause = ".pause-timer";
+	// 		reset = ".reset-timer";
+	// 	}
+	// }
 
-	/* Button off and check timer */
-	$(".button").on("click", function (e) {
-		TimerControl();
+	// /* Button off and check timer */
+	// $(".button").on("click", function (e) {
+	// 	TimerControl();
 
-		if ($(this)[0] == $(start)[0]) {
-			if (!isStarted) Timer();
+	// 	if ($(this)[0] == $(start)[0]) {
+	// 		if (!isStarted) Timer();
 
-			isStoped = false;
+	// 		isStoped = false;
 
-			if (start == ".start-timer") {
-				$(".pause-timer, .reset-timer").removeClass("disabled");
-				$(".timer__checkbox").addClass("disabled");
-			} else {
-				$(".polyline").addClass("disabled");
+	// 		if (start == ".start-timer") {
+	// 			$(".pause-timer, .reset-timer").removeClass("disabled");
+	// 			$(".timer__checkbox").addClass("disabled");
+	// 		} else {
+	// 			$(".polyline").addClass("disabled");
 
-				setTimeout(function DisableCheckbox() {
-					$(".timer__checkbox").addClass("disabled");
-				}, 250);
-			}
-		} else if ($(this)[0] == $(pause)[0]) {
-			isStoped = true;
+	// 			setTimeout(function DisableCheckbox() {
+	// 				$(".timer__checkbox").addClass("disabled");
+	// 			}, 250);
+	// 		}
+	// 	} else if ($(this)[0] == $(pause)[0]) {
+	// 		isStoped = true;
 
-			if (pause == ".pause-timer") $(".start-timer").removeClass("disabled");
-		} else if ($(this)[0] == $(reset)[0]) {
-			isStoped = true;
+	// 		if (pause == ".pause-timer") $(".start-timer").removeClass("disabled");
+	// 	} else if ($(this)[0] == $(reset)[0]) {
+	// 		isStoped = true;
 
-			min = 0;
-			sec = 0;
-			ms = 0;
+	// 		min = 0;
+	// 		sec = 0;
+	// 		ms = 0;
 
-			minute = "";
-			second = "";
-			msecond = "";
+	// 		minute = "";
+	// 		second = "";
+	// 		msecond = "";
 
-			$(".timer__minutes").html("00");
-			$(".timer__seconds").html("00");
-			$(".timer__milliseconds").html("00");
+	// 		$(".timer__minutes").html("00");
+	// 		$(".timer__seconds").html("00");
+	// 		$(".timer__milliseconds").html("00");
 
-			if (reset == ".reset-timer") {
-				$(".pause-timer").addClass("disabled");
-				$(".start-timer").removeClass("disabled");
-				$(".timer__checkbox").removeClass("disabled");
-			} else {
-				$(".polyline").removeClass("disabled");
+	// 		if (reset == ".reset-timer") {
+	// 			$(".pause-timer").addClass("disabled");
+	// 			$(".start-timer").removeClass("disabled");
+	// 			$(".timer__checkbox").removeClass("disabled");
+	// 		} else {
+	// 			$(".polyline").removeClass("disabled");
 
-				setTimeout(function DisableCheckbox() {
-					$(".timer__checkbox").removeClass("disabled");
-				}, 250);
-			}
-		}
+	// 			setTimeout(function DisableCheckbox() {
+	// 				$(".timer__checkbox").removeClass("disabled");
+	// 			}, 250);
+	// 		}
+	// 	}
 
-		$(this).addClass("disabled");
-	});
+	// 	$(this).addClass("disabled");
+	// });
 
 	/* Popup */
 	$(".popup").mousedown(function () {
