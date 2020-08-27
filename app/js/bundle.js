@@ -9375,7 +9375,6 @@
       })();
       function LoadModel(data, texFileName, model) {
         var objFile = new obj.default(data);
-        console.log(objFile);
         var parsed = objFile.parse();
         var vertices = [];
         var UVs = [];
