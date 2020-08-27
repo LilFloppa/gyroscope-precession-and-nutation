@@ -843,7 +843,6 @@
         }
         currentTime = new Date().getTime();
         var dt = (currentTime - lastTime) / 1000;
-        time += dt;
         // Clear scene
         exports.gl.clearColor(0.82, 0.88, 0.94, 1.0);
         exports.gl.enable(exports.gl.DEPTH_TEST);
@@ -881,7 +880,10 @@
         if (timerRunning) updateTimer(dt);
 
         // Update plots
-        if (gyroRunning) UpdatePlots(gyroscope, time);
+        if (gyroRunning) {
+          time += dt;
+          UpdatePlots(gyroscope, time);
+        }
         // Next frame
         lastTime = currentTime;
         window.requestAnimationFrame(draw);
