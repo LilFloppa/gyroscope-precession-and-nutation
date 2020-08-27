@@ -167,7 +167,7 @@ function glCanvasOnResize() {
 }
 var gyroscope;
 var trajectory;
-var running = false;
+var gyroRunning = false;
 var min = 0;
 var sec = 0;
 var ms = 0;
@@ -201,7 +201,7 @@ function TimerControl() {
     if (document.getElementById("check").classList.contains("is-checked")) {
         document.getElementById("start-timer").classList.add("disabled");
         document.getElementById("start").onclick = function (ev) {
-            running = true;
+            gyroRunning = true;
             document.getElementById("start").classList.add("disabled");
             timerRunning = true;
             setTimeout(function () {
@@ -210,12 +210,12 @@ function TimerControl() {
             document.getElementById("polyline").classList.add("disabled");
         };
         document.getElementById("pause").onclick = function (ev) {
-            running = false;
+            gyroRunning = false;
             document.getElementById("pause").classList.add("disabled");
             timerRunning = false;
         };
         document.getElementById("reset").onclick = function (ev) {
-            running = false;
+            gyroRunning = false;
             gyroscope.Reset();
             trajectory.Clear();
             document.getElementById("reset").classList.add("disabled");
@@ -235,16 +235,16 @@ function TimerControl() {
     else {
         document.getElementById("start-timer").classList.remove("disabled");
         document.getElementById("start").onclick = function (ev) {
-            running = true;
+            gyroRunning = true;
             document.getElementById("start").classList.add("disabled");
             document.getElementById("timer__checkbox").classList.add("disabled");
         };
         document.getElementById("pause").onclick = function (ev) {
-            running = false;
+            gyroRunning = false;
             document.getElementById("pause").classList.add("disabled");
         };
         document.getElementById("reset").onclick = function (ev) {
-            running = false;
+            gyroRunning = false;
             gyroscope.Reset();
             trajectory.Clear();
             document.getElementById("reset").classList.add("disabled");
@@ -316,16 +316,16 @@ function startup() {
     trajectoryShader.setMat4("t_proj", proj);
     // Init Buttons
     document.getElementById("start").addEventListener("click", function (ev) {
-        running = true;
+        gyroRunning = true;
         document.getElementById("start").classList.add("disabled");
         document.getElementById("timer__checkbox").classList.add("disabled");
     });
     document.getElementById("pause").addEventListener("click", function (ev) {
-        running = false;
+        gyroRunning = false;
         document.getElementById("pause").classList.add("disabled");
     });
     document.getElementById("reset").addEventListener("click", function (ev) {
-        running = false;
+        gyroRunning = false;
         gyroscope.Reset();
         trajectory.Clear();
         document.getElementById("reset").classList.add("disabled");
@@ -385,7 +385,8 @@ function startup() {
         sec = 0;
         ms = 0;
         timerRunning = false;
-        document.getElementById("timer__checkbox").classList.remove("disabled");
+        if (!gyroRunning)
+            document.getElementById("timer__checkbox").classList.remove("disabled");
     };
     document.getElementById("timer__checkbox").onclick = function () {
         document.getElementById("check").classList.toggle("is-checked");
@@ -417,7 +418,7 @@ function draw() {
     wheelOffset = 0;
     var view = camera.GetLookAt();
     // Update gyroscope
-    if (running) {
+    if (gyroRunning) {
         for (var i = 0; i * 0.0001 < dt / 3; i++)
             gyroscope.Update(0.0001);
         trajectory.AddPoint(gyroscope.phi, gyroscope.theta);

@@ -76,7 +76,7 @@ function glCanvasOnResize(): void {
 
 let gyroscope: Gyroscope;
 let trajectory: Trajectory;
-let running: boolean = false;
+let gyroRunning: boolean = false;
 
 let min: number = 0;
 let sec: number = 0;
@@ -116,7 +116,7 @@ function TimerControl() {
     document.getElementById("start-timer").classList.add("disabled");
 
     document.getElementById("start").onclick = function (ev: MouseEvent) {
-      running = true;
+      gyroRunning = true;
       document.getElementById("start").classList.add("disabled");
       timerRunning = true;
 
@@ -127,13 +127,13 @@ function TimerControl() {
     };
 
     document.getElementById("pause").onclick = function (ev: MouseEvent) {
-      running = false;
+      gyroRunning = false;
       document.getElementById("pause").classList.add("disabled");
       timerRunning = false;
     };
 
     document.getElementById("reset").onclick = function (ev: MouseEvent) {
-      running = false;
+      gyroRunning = false;
       gyroscope.Reset();
       trajectory.Clear();
 
@@ -157,19 +157,19 @@ function TimerControl() {
     document.getElementById("start-timer").classList.remove("disabled");
 
     document.getElementById("start").onclick = function (ev: MouseEvent) {
-      running = true;
+      gyroRunning = true;
       document.getElementById("start").classList.add("disabled");
 
       document.getElementById("timer__checkbox").classList.add("disabled");
     };
 
     document.getElementById("pause").onclick = function (ev: MouseEvent) {
-      running = false;
+      gyroRunning = false;
       document.getElementById("pause").classList.add("disabled");
     };
 
     document.getElementById("reset").onclick = function (ev: MouseEvent) {
-      running = false;
+      gyroRunning = false;
       gyroscope.Reset();
       trajectory.Clear();
 
@@ -264,19 +264,19 @@ function startup(): void {
 
   // Init Buttons
   document.getElementById("start").addEventListener("click", function (ev: MouseEvent) {
-    running = true;
+    gyroRunning = true;
     document.getElementById("start").classList.add("disabled");
 
     document.getElementById("timer__checkbox").classList.add("disabled");
   });
 
   document.getElementById("pause").addEventListener("click", function (ev: MouseEvent) {
-    running = false;
+    gyroRunning = false;
     document.getElementById("pause").classList.add("disabled");
   });
 
   document.getElementById("reset").addEventListener("click", function (ev: MouseEvent) {
-    running = false;
+    gyroRunning = false;
     gyroscope.Reset();
     trajectory.Clear();
 
@@ -357,7 +357,7 @@ function startup(): void {
 
     timerRunning = false;
 
-    document.getElementById("timer__checkbox").classList.remove("disabled");
+    if (!gyroRunning) document.getElementById("timer__checkbox").classList.remove("disabled");
   };
 
   document.getElementById("timer__checkbox").onclick = function () {
@@ -396,7 +396,7 @@ function draw(): void {
   let view: glm.mat4 = camera.GetLookAt();
 
   // Update gyroscope
-  if (running) {
+  if (gyroRunning) {
     for (let i: number = 0; i * 0.0001 < dt / 3; i++) gyroscope.Update(0.0001);
     trajectory.AddPoint(gyroscope.phi, gyroscope.theta);
   }
