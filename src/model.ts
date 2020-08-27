@@ -33,7 +33,6 @@ class Vertex {
 
 export function LoadModel(data: string, texFileName: string, model: IModel) {
   const objFile = new obj.default(data);
-  console.log(objFile);
   const parsed = objFile.parse();
 
   let vertices: { x: number; y: number; z: number }[] = [];
