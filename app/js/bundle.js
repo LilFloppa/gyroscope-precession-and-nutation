@@ -576,13 +576,17 @@
       function glCanvasOnResize() {
         width = glCanvas.clientWidth;
         height = glCanvas.clientHeight;
+        console.log(width, "  ", height);
         exports.gl.canvas.width = width;
         exports.gl.canvas.height = height;
         exports.gl.viewport(0, 0, width, height);
         var proj = glm.mat4.create();
         proj = glm.mat4.identity(proj);
         glm.mat4.perspective(proj, glm.glMatrix.toRadian(45.0), width / height, 0.1, 1000);
+        shader.use();
         shader.setMat4("proj", proj);
+        trajectoryShader.use();
+        trajectoryShader.setMat4("proj", proj);
       }
       var gyroscope;
       var trajectory;
@@ -672,7 +676,6 @@
         glCanvas = document.getElementById("canvas");
         glCanvas.addEventListener("mousemove", glCanvasOnMouseMove);
         glCanvas.addEventListener("wheel", glCanvasOnWheel);
-        glCanvas.addEventListener("resize", glCanvasOnResize);
         glCanvas.addEventListener("mousedown", glCanvasOnMouseDown);
         glCanvas.addEventListener("mouseup", glCanvasOnMouseUp);
         exports.gl = glCanvas.getContext("webgl2");
@@ -798,7 +801,6 @@
 
           ClearPlots();
         });
-
         document.getElementById("start-timer").onclick = function () {
           document.getElementById("start-timer").classList.add("disabled");
           document.getElementById("pause-timer").classList.remove("disabled");
@@ -831,6 +833,7 @@
 
         CreatePlots();
       }
+
       var currentTime = 0;
       var lastTime = 0;
       var firstTime = true;
@@ -843,6 +846,7 @@
         }
         currentTime = new Date().getTime();
         var dt = (currentTime - lastTime) / 1000;
+        glCanvasOnResize();
         // Clear scene
         exports.gl.clearColor(0.82, 0.88, 0.94, 1.0);
         exports.gl.enable(exports.gl.DEPTH_TEST);
@@ -878,7 +882,6 @@
         trajectory.Draw();
         //Update timer
         if (timerRunning) updateTimer(dt);
-
         // Update plots
         if (gyroRunning) {
           time += dt;

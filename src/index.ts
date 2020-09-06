@@ -11,7 +11,7 @@ import * as objmodels from "./objmodels";
 import * as shadersources from "./shadersources";
 
 export let gl: WebGL2RenderingContext;
-let glCanvas: HTMLElement;
+let glCanvas: HTMLCanvasElement;
 
 let shader: Shader;
 let trajectoryShader: Shader;
@@ -62,6 +62,8 @@ function glCanvasOnResize(): void {
   width = glCanvas.clientWidth;
   height = glCanvas.clientHeight;
 
+  console.log(width, "  ", height);
+
   gl.canvas.width = width;
   gl.canvas.height = height;
 
@@ -71,7 +73,12 @@ function glCanvasOnResize(): void {
   proj = glm.mat4.identity(proj);
 
   glm.mat4.perspective(proj, glm.glMatrix.toRadian(45.0), width / height, 0.1, 1000);
+
+  shader.use();
   shader.setMat4("proj", proj as Float32Array);
+
+  trajectoryShader.use();
+  trajectoryShader.setMat4("proj", proj as Float32Array);
 }
 
 let gyroscope: Gyroscope;
@@ -181,15 +188,14 @@ function TimerControl() {
 
 function startup(): void {
   // Init canvas
-  glCanvas = document.getElementById("canvas");
+  glCanvas = document.getElementById("canvas") as HTMLCanvasElement;
 
   glCanvas.addEventListener("mousemove", glCanvasOnMouseMove);
   glCanvas.addEventListener("wheel", glCanvasOnWheel);
-  glCanvas.addEventListener("resize", glCanvasOnResize);
   glCanvas.addEventListener("mousedown", glCanvasOnMouseDown);
   glCanvas.addEventListener("mouseup", glCanvasOnMouseUp);
 
-  gl = (glCanvas as HTMLCanvasElement).getContext("webgl2");
+  gl = glCanvas.getContext("webgl2");
 
   width = glCanvas.clientWidth;
   height = glCanvas.clientHeight;
@@ -380,6 +386,8 @@ function draw(): void {
 
   currentTime = new Date().getTime();
   let dt: number = (currentTime - lastTime) / 1000;
+
+  glCanvasOnResize();
 
   // Clear scene
   gl.clearColor(0.82, 0.88, 0.94, 1.0);
