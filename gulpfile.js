@@ -80,6 +80,10 @@ gulp.task('build', gulp.series('removedist', 'styles', 'scripts', function(Conti
 		'app/assets/*.*',
 		]).pipe(gulp.dest('dist/assets'));
 
+	let buildFonts = gulp.src([
+		'app/fonts/**/*.*',
+		]).pipe(gulp.dest('dist/fonts'));
+
 	let buildModels = gulp.src([
 		'app/models/*.obj',
 		]).pipe(gulp.dest('dist/models'));
@@ -93,7 +97,7 @@ gulp.task('build', gulp.series('removedist', 'styles', 'scripts', function(Conti
 		]).pipe(gulp.dest('dist/sass'));
 
 	let buildJs = gulp.src([
-		'app/js/*.*',
+		'app/js/**/*.*',
 		]).pipe(gulp.dest('dist/js'));
 
 	let buildImg = gulp.src([
