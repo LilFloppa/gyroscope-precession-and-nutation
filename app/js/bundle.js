@@ -71,11 +71,11 @@
     /******/ var getter =
       module && module.__esModule
         ? /******/ function getDefault() {
-            return module["default"];
-          }
+          return module["default"];
+        }
         : /******/ function getModuleExports() {
-            return module;
-          };
+          return module;
+        };
     /******/ __webpack_require__.d(getter, "a", getter);
     /******/ return getter;
     /******/
@@ -92,7 +92,7 @@
   /******/
 })(
   /************************************************************************/
-  /******/ [
+  /******/[
     /* 0 */
     /***/ function (module, exports, __webpack_require__) {
       "use strict";
@@ -101,27 +101,27 @@
         (this && this.__createBinding) ||
         (Object.create
           ? function (o, m, k, k2) {
-              if (k2 === undefined) k2 = k;
-              Object.defineProperty(o, k2, {
-                enumerable: true,
-                get: function () {
-                  return m[k];
-                },
-              });
-            }
-          : function (o, m, k, k2) {
-              if (k2 === undefined) k2 = k;
-              o[k2] = m[k];
+            if (k2 === undefined) k2 = k;
+            Object.defineProperty(o, k2, {
+              enumerable: true,
+              get: function () {
+                return m[k];
+              },
             });
+          }
+          : function (o, m, k, k2) {
+            if (k2 === undefined) k2 = k;
+            o[k2] = m[k];
+          });
       var __setModuleDefault =
         (this && this.__setModuleDefault) ||
         (Object.create
           ? function (o, v) {
-              Object.defineProperty(o, "default", { enumerable: true, value: v });
-            }
+            Object.defineProperty(o, "default", { enumerable: true, value: v });
+          }
           : function (o, v) {
-              o["default"] = v;
-            });
+            o["default"] = v;
+          });
       var __importStar =
         (this && this.__importStar) ||
         function (mod) {
@@ -9322,27 +9322,27 @@
         (this && this.__createBinding) ||
         (Object.create
           ? function (o, m, k, k2) {
-              if (k2 === undefined) k2 = k;
-              Object.defineProperty(o, k2, {
-                enumerable: true,
-                get: function () {
-                  return m[k];
-                },
-              });
-            }
-          : function (o, m, k, k2) {
-              if (k2 === undefined) k2 = k;
-              o[k2] = m[k];
+            if (k2 === undefined) k2 = k;
+            Object.defineProperty(o, k2, {
+              enumerable: true,
+              get: function () {
+                return m[k];
+              },
             });
+          }
+          : function (o, m, k, k2) {
+            if (k2 === undefined) k2 = k;
+            o[k2] = m[k];
+          });
       var __setModuleDefault =
         (this && this.__setModuleDefault) ||
         (Object.create
           ? function (o, v) {
-              Object.defineProperty(o, "default", { enumerable: true, value: v });
-            }
+            Object.defineProperty(o, "default", { enumerable: true, value: v });
+          }
           : function (o, v) {
-              o["default"] = v;
-            });
+            o["default"] = v;
+          });
       var __importStar =
         (this && this.__importStar) ||
         function (mod) {
@@ -9366,7 +9366,7 @@
       var glm = __importStar(__webpack_require__(1));
       var obj = __importStar(__webpack_require__(10));
       var Model = /** @class */ (function () {
-        function Model() {}
+        function Model() { }
         return Model;
       })();
       exports.Model = Model;
@@ -9508,27 +9508,27 @@
         (this && this.__createBinding) ||
         (Object.create
           ? function (o, m, k, k2) {
-              if (k2 === undefined) k2 = k;
-              Object.defineProperty(o, k2, {
-                enumerable: true,
-                get: function () {
-                  return m[k];
-                },
-              });
-            }
-          : function (o, m, k, k2) {
-              if (k2 === undefined) k2 = k;
-              o[k2] = m[k];
+            if (k2 === undefined) k2 = k;
+            Object.defineProperty(o, k2, {
+              enumerable: true,
+              get: function () {
+                return m[k];
+              },
             });
+          }
+          : function (o, m, k, k2) {
+            if (k2 === undefined) k2 = k;
+            o[k2] = m[k];
+          });
       var __setModuleDefault =
         (this && this.__setModuleDefault) ||
         (Object.create
           ? function (o, v) {
-              Object.defineProperty(o, "default", { enumerable: true, value: v });
-            }
+            Object.defineProperty(o, "default", { enumerable: true, value: v });
+          }
           : function (o, v) {
-              o["default"] = v;
-            });
+            o["default"] = v;
+          });
       var __importStar =
         (this && this.__importStar) ||
         function (mod) {
@@ -9586,7 +9586,7 @@
             this.radius * Math.sin(this.phi) * Math.cos(this.psi),
           ];
         };
-        Camera.prototype.Update = function () {};
+        Camera.prototype.Update = function () { };
         Camera.prototype.GetLookAt = function () {
           var lookat = glm.mat4.create();
           glm.mat4.lookAt(lookat, this.position, this.center, [0.0, 1.0, 0.0]);
@@ -9941,27 +9941,27 @@
         (this && this.__createBinding) ||
         (Object.create
           ? function (o, m, k, k2) {
-              if (k2 === undefined) k2 = k;
-              Object.defineProperty(o, k2, {
-                enumerable: true,
-                get: function () {
-                  return m[k];
-                },
-              });
-            }
-          : function (o, m, k, k2) {
-              if (k2 === undefined) k2 = k;
-              o[k2] = m[k];
+            if (k2 === undefined) k2 = k;
+            Object.defineProperty(o, k2, {
+              enumerable: true,
+              get: function () {
+                return m[k];
+              },
             });
+          }
+          : function (o, m, k, k2) {
+            if (k2 === undefined) k2 = k;
+            o[k2] = m[k];
+          });
       var __setModuleDefault =
         (this && this.__setModuleDefault) ||
         (Object.create
           ? function (o, v) {
-              Object.defineProperty(o, "default", { enumerable: true, value: v });
-            }
+            Object.defineProperty(o, "default", { enumerable: true, value: v });
+          }
           : function (o, v) {
-              o["default"] = v;
-            });
+            o["default"] = v;
+          });
       var __importStar =
         (this && this.__importStar) ||
         function (mod) {
@@ -10020,7 +10020,7 @@
           return this.mass * g * this.length * Math.cos(this.theta);
         };
         Gyroscope.prototype.GetE = function () {
-          return Math.round((this.GetEk() + this.GetU() * 10) / 10.0);
+          return this.GetEk() + this.GetU();
         };
         Gyroscope.prototype.Update = function (dt) {
           this.time += dt;
@@ -10127,11 +10127,11 @@
       })();
       exports.Gyroscope = Gyroscope;
       var Stand = /** @class */ (function () {
-        function Stand() {}
+        function Stand() { }
         return Stand;
       })();
       var Box = /** @class */ (function () {
-        function Box() {}
+        function Box() { }
         Box.prototype.Update = function (dPhi) {
           glm.mat4.rotateY(this.modelMat, this.modelMat, dPhi);
         };
