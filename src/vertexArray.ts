@@ -8,7 +8,7 @@ export class VertexArray {
   readonly size: number;
 
   constructor(vertices: Float32Array) {
-    this.size = vertices.length / 6;
+    this.size = vertices.length / 8;
 
     this.VAO = gl.createVertexArray();
     gl.bindVertexArray(this.VAO);

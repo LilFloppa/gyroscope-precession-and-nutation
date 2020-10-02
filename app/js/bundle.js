@@ -576,7 +576,6 @@
       function glCanvasOnResize() {
         width = glCanvas.clientWidth;
         height = glCanvas.clientHeight;
-        console.log(width, "  ", height);
         exports.gl.canvas.width = width;
         exports.gl.canvas.height = height;
         exports.gl.viewport(0, 0, width, height);
@@ -9687,7 +9686,7 @@
           this.VAO = null;
           this.VBO = null;
           this.EBO = null;
-          this.size = vertices.length / 6;
+          this.size = vertices.length / 8;
           this.VAO = index_1.gl.createVertexArray();
           index_1.gl.bindVertexArray(this.VAO);
           this.VBO = index_1.gl.createBuffer();

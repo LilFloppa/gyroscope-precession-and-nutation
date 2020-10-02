@@ -19,6 +19,7 @@ gulp.task('browser-sync', function() {
 			baseDir: 'app'
 		},
 		notify: false,
+		tunnel: true, tunnel: "projectname"
 	})
 });
 
@@ -47,6 +48,7 @@ gulp.task('scripts', function() {
 		'app/libs/MathJax/jax/element/mml/optable/GreekAndCoptic.js',
 		'app/libs/MathJax/jax/element/mml/optable/Latin1Supplement.js',
 		'app/js/common.js',                             /* Always at the end */
+		'app/js/bundle.js'
 	])
 	.pipe(concat('scripts.min.js'))
 	.pipe(terser())                               		/* Minify js (opt.) */
@@ -84,20 +86,12 @@ gulp.task('build', gulp.series('removedist', 'styles', 'scripts', function(Conti
 		'app/fonts/**/*.*',
 		]).pipe(gulp.dest('dist/fonts'));
 
-	let buildModels = gulp.src([
-		'app/models/*.obj',
-		]).pipe(gulp.dest('dist/models'));
-
 	let buildCss = gulp.src([
 		'app/css/main.min.css',
 		]).pipe(gulp.dest('dist/css'));
 
-	let buildSass = gulp.src([
-		'app/sass/*.sass',
-		]).pipe(gulp.dest('dist/sass'));
-
 	let buildJs = gulp.src([
-		'app/js/**/*.*',
+		'app/js/scripts.min.js',
 		]).pipe(gulp.dest('dist/js'));
 
 	let buildImg = gulp.src([
@@ -108,7 +102,7 @@ gulp.task('build', gulp.series('removedist', 'styles', 'scripts', function(Conti
 
 gulp.task('watch', function() {
 	gulp.watch('app/'+syntax+'/**/*.'+syntax+'', gulp.parallel('styles'))
-	gulp.watch(['libs/**/*.js', 'app/js/common.js'], gulp.parallel('scripts'));
+	gulp.watch(['libs/**/*.js', 'app/js/common.js', 'app/js/bundle.js'], gulp.parallel('scripts'));
 	gulp.watch('app/*.html', gulp.parallel('code'));
 });
 

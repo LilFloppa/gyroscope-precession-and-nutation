@@ -62,8 +62,6 @@ function glCanvasOnResize(): void {
   width = glCanvas.clientWidth;
   height = glCanvas.clientHeight;
 
-  console.log(width, "  ", height);
-
   gl.canvas.width = width;
   gl.canvas.height = height;
 

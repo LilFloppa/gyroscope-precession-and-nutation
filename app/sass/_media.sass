@@ -157,7 +157,7 @@
 			line-height: 45px
 
 	.repeat-sign
-		&--second, &--fifth, &--seventh
+		&--second, &--seventh
 			display: inline
 
 @media (max-height: 650px), (max-width: 650px)
@@ -183,7 +183,7 @@
 
 	.popup-developers
 		.popup__content
-			height: 320px
+			height: 315px
 
 	.repeat-sign
 		&--first, &--third, &--fourth, &--seventh
@@ -191,21 +191,24 @@
 		&--fifth
 			display: none
 
-	.equation--sm
-		&--first
-			line-height: 70px
-			position: relative
-		&--second
-			font-size: 111%
-		&--third
-			font-size: 107%
-		&--sixth
-			margin-bottom: 8px
+	.equation
+		&--move
+			display: flex
+			justify-content: center
+			margin-top: 10px
+		&--sm
+			&--first
+				line-height: 70px
+				font-size: 113%
+			&--second
+				font-size: 106%
+			&--third
+				font-size: 99%
+			&--fourth, &--fifth
+				font-size: 106%
+			&--sixth
+				margin-bottom: 8px
+				font-size: 110%
 
-	#MJXc-Node-170
-		margin-bottom: 65px
-
-	#MJXc-Node-171
-		position: absolute
-		top: 40px
-		transform: translateX(-165px)
+	#MJXc-Node-307
+		margin-bottom: 10px
