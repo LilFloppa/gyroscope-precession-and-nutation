@@ -7,7 +7,7 @@ View a <a href="https://golab.nstu.ru" target="_blank">demo</a>.
 	
 ## Publications
 
-### Publications associated with laboratory:
+### Publications associated with the laboratory:
 
 * <a href="https://iopscience.iop.org/article/10.1088/1742-6596/1488/1/012005/pdf" target="_blank">Project development of the virtual laboratory work with 3D visualization
 of gyroscope motion</a> - Journal of Physics (indexed in Scopus).
